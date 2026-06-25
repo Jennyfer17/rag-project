@@ -1,0 +1,10 @@
+requests
+pandas
+PyMuPDF
+pdfplumber
+rasterio
+sentence-transformers
+SQLAlchemy
+chromadb
+jupyter
+ollama
