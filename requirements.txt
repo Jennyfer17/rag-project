@@ -1,11 +1,23 @@
+# --- Extracção e ingestão de dados ---
 requests
 pandas
 PyMuPDF
 pdfplumber
 rasterio
-sentence-transformers
-SQLAlchemy
-chromadb
-jupyter
-ollama
 easyocr
+jupyter
+
+# --- Embeddings e base vectorial ---
+sentence-transformers
+chromadb
+
+# --- Base de dados relacional ---
+SQLAlchemy
+
+# --- LLM ---
+ollama
+
+# --- API (a implementar) ---
+fastapi
+uvicorn[standard]
+pydantic
