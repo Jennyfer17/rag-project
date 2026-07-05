@@ -8,3 +8,4 @@ SQLAlchemy
 chromadb
 jupyter
 ollama
+easyocr

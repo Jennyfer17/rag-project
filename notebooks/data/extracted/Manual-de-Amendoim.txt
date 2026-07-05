@@ -1,0 +1,752 @@
+MINISTÉRIO DE AGRICULTURA E SEGURANÇA ALIMENTAR
+INSTITUTO DE INVESTIGAÇÃO AGRÁRIA DE MOÇAMBIQUE
+Amade Muitia
+Maputo, 2015
+AMEDNOIM 
+Maneio 
+da cultura de
+
+Ficha Técnica
+Titulo: 
+Coordenação:
+Autor:
+Capa e Produção gráfica: 
+Tiragem:
+Registo:
+Data:
+Maneio da Cultura de Amendoim
+Constantino Cuambe, Ivete Maluleque e 
+Américo Humulane
+Amade Muitia
+Disp. Reg/GABINFO-DEC/2006
+Marcos Vieira Niuaia
+500 Exemplares
+Maputo, Dezembro de 2015
+
+Cultivo de Amendoim na Região Norte de Moçambique
+O presente manual da cultura de amendoim para a região Norte de 
+Moçambique apresenta as linhas de orientação para o cultivo do 
+amendoim. Contudo os técnicos são chamados a fazerem os ajustes 
+necessários a cada situação em função do conhecimento local e das 
+condições agroclimaticas de cada localidade.
+Este manual é baseado nas recomendações da pesquisa e na descrição dos 
+sistemas de cultivo da região norte de Moçambique. 
+Regiões Agro-ecológicas
+O objectivo principal deste manual práctico da cultura de amednoim é de 
+contribuir para a melhoria da produção e produtividade desta cultura 
+providenciando informação técnica que permita obtenção de rendimentos 
+altos e estáveis nas regiões agro-climáticas VI, VII, X e XI descritas por 
+Carvalho (1969). Estas regiões coincidem com as também conhecidas como 
+regiões agro-ecológicas R7 e R8.
+Produtor Alvo
+ Este manual tem como alvos os pequenos e médios produtores das regiões 
+agro-climáticas VI, VII, X e XI que praticam a cultura de amendoim.
+Sistema de Cultivo
+Sequeiro.
+1
+
+Introdução da Cultura
+Amendoim constitui uma das maiores culturas de rendimento e a maior 
+fonte de óleo da cozinha para muitas famílias Moçambicanas. O amendoim 
+ocupa a maior área de cultivo entre as leguminosas de grão cultivadas em 
+Moçambique e é a oleaginosa mais importante seguida pelo algodão e 
+girassol. A cultura é cultivada em todo país, incluindo nas regiões onde o 
+coqueiro é a cultura principal, basicamente por produtores de pequena 
+escala e em condições de sequeiro. A maior parte da produção de 
+amendoim no país está concentrada nas províncias de Nampula, Cabo 
+Delgado e Zambézia (região 7 (R7) e região 8 (R8) ) no norte, e na região 2 
+(R2) e região 3 (R3) no sul do país. As chuvas na região norte de Moçambique 
+são definidas e começam em Novembro prolongando-se até nos finais de 
+Abril com um total de cerca de 800 a 1200 mm por ano. O amendoim é 
+cultivado maioritariamente por pequenos produtores com poucos 
+recursos. Os rendimentos observados e a qualidade da produção são 
+geralmente baixos devido a vários constrangimentos. Os principais 
+constrangimentos de produção de amendoim em Moçambique incluem 
+pragas, práticas culturais inadequadas (baixa densidade de plantas e 
+sementeira tardia), doenças (roseta e manchas foliares), seca, falta de acesso 
+ao crédito e problemas de pós-colheita (aflatoxinas).
+Variedades
+As variedades actualmente recomendadas para estas regiões agro-
+ecológicas são: Nametil, ICGV SM 99541, ICGV SM 99568, ICGV SM 01513, 
+ICGV SM 01514 e JL 24. Fazer a melhor decisão sobre a variedade é muito 
+importante para bons rendimentos e mercado. Algumas destas variedades 
+são resistentes às doenças e outras têm outras características preferidas 
+pelos produtores e/ou consumidores. Contudo, a diferença em rendimento 
+entre as melhores variedades e as variedades de baixos rendimentos é de 
+10-20%. Deste modo, o produtor tem apenas uma única oportunidade para 
+2
+
+fazer a decisão certa na selecção de variedades. A tabela abaixo mostra as 
+variedades recomendadas para a região e as suas características.
+Método de Propagação
+A cultura de amendoim tem como o meio de propagação a semente
+Práticas Culturais
+Selecção e preparação do Solo 
+O solo ideal para o amendoim deve ser bem drenado com uma textura 
+franco-arenosa para facilitar a penetração dos genóforos depois da 
+polinização, e para permitir fácil colheita sem perda de vagens. O 
+amendoim pode ser semeado em solos arenosos ou excessivamente 
+drenados, mas nestes casos há necessidade de suplementar água via 
+irrigação para manter os rendimentos. Se semeado em solos pesados e mal-
+drenados, haverá uma prevalência de doenças e normalmente os 
+Variedade 
+Peso de 100 
+sementes (g) 
+Rendimento 
+(ton/ha) 
+Ciclo 
+(dias) 
+Cor do 
+grão 
+Hábito de 
+crescimento 
+Observações 
+Nametil 
+25 
+2.5 
+110-120 
+Castanho 
+claro 
+Erecto (Spanish) 
+Resistente a 
+roseta 
+ICGV-SM 99541 
+25 
+3.0 
+110-120 
+Castanho 
+claro 
+Erecto (Spanish) 
+Resistente a 
+roseta 
+ICGV-SM 99568 
+25 
+2.8 
+110-120 
+Castanho 
+claro 
+Erecto (Spanish) 
+Resistente a 
+roseta 
+ICGV-SM 01513 
+25 
+3.0 
+110-120 
+Castanho 
+claro 
+Erecto (Spanish) 
+Resistente a 
+roseta 
+ICGV-SM 01514 
+25 
+3.0 
+110-120 
+Castanho 
+claro 
+Erecto (Spanish) 
+Resistente a 
+roseta 
+JL 24 
+25 
+2.5 
+110-120 
+Creme 
+Erecto (Spanish) 
+Susceptível a 
+roseta 
+ 
+3
+
+rendimentos são baixos porque muitas vagens ficam no solo na altura de 
+colheita. A preparação do solo pode ser feita usando enxadas, tracção 
+animal ou tractor.
+Destronca
+A destronca é feita quando se pretende abrir um campo novo e tem como 
+finalidade a destruição e remoção das árvores e os respectivos troncos do 
+novo campo. 
+Lavoura
+A preparação de solo é muito importante para a remoção de resíduos da 
+cultura anterior e que possivelmente podem ser abrigos de pragas e fontes 
+de inóculo de doenças. Recomenda-se uma lavoura profunda (15-20 cm de 
+profundidade).
+Para solos pesados ou áreas com muita pluviosidade, os campos devem ser 
+lavrados no início da campanha agrícola para evitar o surgimento de 
+infestantes e quebrar o solo que mais tarde será refinado por uma ou duas 
+gradagens.
+Gradagem
+Para solos leves, uma gradagem é suficiente e deve ser feita depois das 
+primeiras chuvas para eliminar as infestantes que terão emergido e quebrar 
+a camada superficial do solo para a sementeira. 
+Em solos pesados poderão ser feitas duas gradagens para obter uma boa 
+cama para a cultura.
+4
+
+Armação do solo
+Em solos pesados, aconselha-se semear o amendoim em camalhões para 
+permitir a drenagem das águas em excesso, evitar a compactação onde a 
+semente está colocada e facilitar as operações culturais visto que todas as 
+actividades e movimentos serão feitos entre os camalhões.
+Em solos leves, o amendoim pode ser semeado num terreno plano.
+Sementeira
+A sementeira da cultura de amendoim deve ser feita de maneira que o ciclo 
+da cultura coincida com a distribuição das chuvas e outros factores. Ao 
+semear o amendoim, coloque a semente onde tem maior probabilidade de 
+germinar, desenvolver um sistema radicular robusto e crescer 
+satisfatoriamente. A sementeira deve ser feita de maneira que facilite as 
+práticas culturais subsequentes para a obtenção de altos rendimentos a 
+baixos custos.
+A sementeira pode ser feita numa numa superfície plana, em camalhões 
+e/ou em sulcos. 
+A escolha do sistema de sementeira depende do produtor e das condições 
+locais (exemplo: em solos pesados e em zonas de alta precipitação pode se 
+escolher a sementeira em camalhões para garantir uma boa drenagem e 
+facilitar a colheita enquanto que quando a pluviosidade é baixa o 
+amendoim pode semeado em sulcos como forma de captação e retenção 
+de água).
+Época de sementeira
+Uma sementeira atempada influencia no crescimento da cultura e no 
+5
+
+aumento do rendimento. O amendoim deve ser semeado de preferência o 
+mais cedo possível (e.g. na queda regular das chuvas: a partir da segunda 
+quinzena de Novembro até aos finais de Dezembro). Nunca semear o 
+amendoim depois do dia 5 de Janeiro. Semeie em campos com humidade 
+para permitir que a semente absorva humidade suficiente para a sua 
+germinação. Se o amendoim vai ser semeado sob irrigação no tempo fresco 
+(e.g. Agosto/Setembro), evitar temperaturas frias.
+Profundidade de sementeira
+ A profundidade de sementeira recomendada de amendoim é de 5 cm.
+Taxa de sementeira
+A taxa de sementeira ronda a volta dos 100 kg/ha.
+A taxa de sementeira depende da variedade (Valência, Virginia, Spanish), 
+hábito de crescimento (prostrado ou erecto), peso da semente, taxa de 
+germinação do lote da semente e no compasso a ser usado. Em alguns casos 
+é necessário aumentar a quantidade da semente em 20% para garantir uma 
+boa densidade de plantas por unidade de área.
+Exemplo:
+Dado que o peso de 100 sementes é de 32 g, a densidade que se quer é de 
+333000 plantas por ha ou o compasso de 30cmx10cm. Qual será a 
+quantidade de semente necessária?
+Cálculos:
+333000 plantas ha-1 = 33.3 sementes m-2
+6
+
+32 g por 100 sementes = 0.32 g por semente
+Disto: 33.3 sementes m-2 x 0.32 g por semente = 10.65 g de semente m-2
+Deste modo, (10.65 g X 10000 m-2)/1000 g = 106.5 kgha-1
+Adicionando os 20% fica: 106.5 + 20% ou 106.5 x 1.20 = 127.8 kgha-1
+Densidade e compasso
+A densidade óptima para a cultura de amendoim é de 10 plantas/metro 
+linear e para que se alcancem bons rendimentos o compasso ideal é de 
+45cm x 10cm, 1 semente por covacho, o que dá cerca de 222000 plantas/ha. 
+Quando tiver mais semente, pode se semear numa densidade de cerca de 
+333000 plantas/ha, num compasso de 30cm x 10cm.
+Consociação
+Devido a sua tolerância ao ensombreamento, o amendoim é adaptado ao 
+cultivo misto (consociação) com culturas altas como a mexoeira, o milho, o 
+algodão, a mandioca e o feijão boer. Em alguns casos, o amendoim tolera a 
+consociação com culturas permanentes como os palmares. 
+Rotação de Cultura
+Semear amendoim dois anos consecutivos no mesmo campo não é 
+recomendado porque facilita o acréscimo de pragas e doenças no solo. 
+Amendoim deve estar num sistema de rotação com cereais que receberam 
+uma abubação adequada nas campanhas anteriores. Em alguns casos, 
+pode se fazer uma rotação com o algodão. Em geral, um bom sistema de 
+rotação de culturas aumenta os rendimentos, reduz algumas práticas 
+culturais e também reduz os insumos necessários para o maneio da cultura.
+7
+
+Adubação
+A cultura de amendoim responde muito pouco a adubação. Contudo, cálcio 
+(Ca) é necessário em níveis relativamente altos para o enchimento das 
+vagens ou para a formação do grão. Em casos em que o pH do solo é inferior 
+a 5, cálcio (CaCO3) deve ser adicionado no solo para manter o pH acima de 6. 
+O fósforo (P) e o potássio (K) devem ser adicionados no solo para garantir 
+que estes nutrientes sejam suficientes e disponíveis para a cultura. Na 
+ausência de relatórios de análise de solos pode se usar as seguintes 
+quantidades: 20 kg/ha de nitrogénio; 60 kg/ha de fosfóro e 40 kg/ha de 
+potássio.
+Rega 
+O amendoim é considerado uma das culturas tolerantes a seca. Mas existem 
+estágios durante o crescimento que se requerem altos níveis de humidade 
+do solo ou os rendimentos poderão ser severamente limitados. O período 
+A tabela ilustra o estágio de crescimento e os níveis de água necessárias 
+para a cultura
+Semana de crescimento 
+Estágio de crescimento 
+Necessidades de água 
+Semana 1 a 2 
+Sementeira
+à
+germinação
+(emergência) 
+Moderada 
+Semana 3 a 8 
+Germinação 
+à 
+formação 
+do 
+ginóforo/floração 
+Baixa 
+Semana 9 a 15 
+Floração/formação do ginóforo e 
+formação de vagens 
+Alta 
+Semana 16 a 22 
+Formação de vagens à maturação 
+Moderada 
+ 
+8
+
+de grande necessidade de água ocorre durante o período de formação da 
+vagem porque serve para mover o cálcio da solução do solo para as vagens 
+em formação.
+Outras práticas Culturais
+Depois do plantio, deve-se monitorar a cultura continuamente para 
+garantir um crescimento sem problemas. Se o número de plantas na 
+emergência for muito baixo ou as plantas são fracas e deformadas, será 
+necessário fazer uma nova sementeira (retancha). Contudo, deve se 
+determinar as razões da baixa germinação para que as prováveis causas 
+sejam corrigidas antes da nova sementeira.
+Maneio integrado de infestantes, pragas e doenças
+Maneio de infestantes
+A principal prioridade para o produtor depois da germinação do amendoim 
+é manter o campo livre de infestantes. As plântulas de amendoim são muito 
+sensíveis a competição com infestantes e pode reduzir drasticamente os 
+rendimentos da cultura se não forem controladas a partir das primeiras 2 a 3 
+semanas depois da sementeira e continuamente se assim o exigir. 
+O control das infestantes infestantes no amendoim pode ser manual (por 
+meio de enxadas), mecânica (tracção animal ou uso de tractores) e químico 
+(uso de herbicidas). A combinação dos vários métodos de controlo é mais 
+eficiente e económico. O mais efectivo será deste modo uma aplicação de 
+herbicida pré-emergente seguido duma sacha ou duas sachas manuais ou 
+mecânicas
+9
+
+Controlo de pragas
+As pragas mais comuns encontradas na região são: lagartas diversas, 
+térmites, afídeos, trips e percevejos. O controlo destas pragas pode ser 
+químico (insecticidas dependendo da praga) e/ou amanhos culturais (e.g. 
+densidade óptima de plantas, data de sementeira e remoção de 
+hospedeiros alternativos. Outras pragas incluem ratos, corvos, toupeiras, 
+macacos, roscas e nemátodos.
+Controlo de doenças
+As doenças importantes em Moçambique são: mancha precoce ou mancha 
+castanha; mancha tardia ou mancha preta; ferrugem e roseta. 
+As manchas precoce e tardia e a ferrugem são causadas por fungos. O 
+controlo destas doenças deverá ser feito pela aplicação de fungicidas. Para a 
+ferrugem deve se tratar a semente com um fungicida e no caso das 
+manchas foliares deve se fazer um controlo preventivo com um 
+fungicida.Para além de aplicação de fungicidas, os amanhos culturais (e.g. 
+rotação de culturas, sachas, sementeira de semente sã, queima de plantas 
+doentes) são importantes para o controlo de doenças.
+No caso de roseta, o uso de insecticidas contra o vector da doença (afídeos), 
+semear cedo e numa densidade óptima são os meios de controlo da 
+doença. Para além destes meios, o uso de variedades resistentes a roseta é 
+um outro método de controlo da doença.
+Colheita
+A colheita do amendoim deverá ser feita quando ocorrer o amarelecimento 
+das folhas, o que acontece normalmente a partir dos 100 dias depois da 
+sementeira. Uma forma prática de observar se a cultura está pronta para ser 
+10
+
+colhida é arrancar algumas plantas no campo e verificar o interior das 
+vagens. Se o interior das vagens tiver uma cor preta, a cultura está pronta 
+para ser colhida.
+Operações de pós-colheita e beneficiamento 
+Secagem
+Depois das plantas serem arrancadas pode se deixar a secar as vagens 
+voltadas para cima (expostas ao sol) ou em secadores construímos de 
+material local. Uma boa secagem da cultura é muito importante porque 
+ajuda a reduzir o desenvolvimento de fungos que produzem aflatoxinas e 
+reduz a qualidade da semente para o consumo, comercialização e 
+sementeira. O período de secagem varia em função da insolação e pode 
+variar entre os 4 e 8 dias ou quando a percentagem de humidade da 
+semente atingir os 6-8%.
+Debulha
+Os rendimentos de grão estão em volta dos 70% do rendimento das vagens. 
+A debulha pode ser feita manualmente ou mecanicamente. O melhor 
+método de debulha é manual porque resulta em elevadas percentagens de 
+semente não danificada. A debulha deve ser feita quando a semente do 
+amendoim é necessária para o consumo, mercado ou sementeira visto que 
+o tempo de armazenamento do grão debulhado é muito curto e a 
+qualidade reduz rapidamente. 
+Limpeza
+Antes de ensacamento, as partículas não desejadas (pedras, restos de 
+cascas das vagens, grãos partidos, etc.) são removidas e depois os grãos são 
+armazenados.
+11
+
+Ensacamento ou embalagem
+O ensacamneto do amendoim deverá ser feito em sacos de juta ou ráfia com 
+capacidade para 50 kg, podendo contudo ser armazenado em sacos com a 
+capacidade para 25 kg ou 90 kg. Os sacos/embalagens devem ser feitos de 
+material que permitem a circulação do ar. Independentemente do tipo da 
+embalagem, depois da debulha, a semente deve ser inspeccionada. Toda 
+semente enrugada e aquela que apresentar sintomas de fungos deve ser 
+descartada. Nunca ensacar amendoim com altos teores de humidade.
+Armazenamento
+O amedoim pode ser armazenado tanto em casca como em grão. Depois da 
+secagem e embalagem, armazene o amendoim em pilhas de 10 sacos cada 
+quando forem sacos para permitir a circulação livre do ar no armazém para 
+que as vagens/sementes não aumentem o conteúdo da humidade que vai 
+facilitar o crescimento de fungos. 
+Tipos de armazenamento
+A melhor forma de armazenamento de amendoim é em casca. Armazene o 
+amendoim em sacos de ráfia num sítio fresco, seco e bem ventilado visto 
+que estas condições prolongam o período de armazenamento. Se não 
+existirem sacos para a embalagem, pode se usar potes de barro, cestos 
+feitos de material local ou pode se deixar a granel. No caso de 
+armazenamento a granel, deve se construir uma plataforma de bambo para 
+que as vagens nao entrem em contacto directo com a superfície do solo.
+Cuidados no armazém
+O grão a ser armazenado deve conter 6-8%% de teor de humidade para 
+evitar o desenvolvimento de fungos que provocam a aflatoxina. Para além 
+12
+
+disso, teores de humidade acima desses limites provocam, nas sementes 
+armazenadas em embalagens impermeáveis, mais rápida deterioração do 
+que nas embalagens permeáveis.
+Os sacos devem estar sobre suportes de madeira para evitar danificação 
+e/ou contacto directo com o chão do armazém para evitar danificações 
+devido ao humidecimento. Nunca ultrapassar 10 sacos cada pilha.
+Deve-se limpar muito bem antes de colocar no armazém uma nova cultura 
+para evitar o acréscimo de insectos ou pragas do armazém. Deve-se aplicar 
+insecticidas periodicamente para a protecção contra as pragas.
+Tratamento da semente ou grão
+Para a sementeira, o tratamento contra doenças do solo deve ser feita na 
+altura da sementeira. 
+Agro-processamento 
+Calendário Agrícola
+Actividades 
+Meses 
+Janeiro 
+Fevereiro 
+Março 
+Abril 
+Maio 
+Junho 
+Julho 
+Agosto 
+Setembro 
+Outubro 
+Novembro 
+Dezembro 
+Destronca 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Lavoura 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Gradagem 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Sementeira 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Sachas 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Controle de pragas 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Controle de doenças 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Colheita 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Secagem 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Debulha 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Beneficiamento 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Comercialização 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+13
+
+Custos Operacionais
+Ordem 
+Descrição da actividade 
+Unidade 
+Quantidade/ha 
+Custo Unitário (Mts) 
+Custo Total (Mts) 
+1 
+Lavoura (1) 
+Hora 
+3 
+1000 
+3000 
+2 
+Gradagem (1) 
+Hora 
+2 
+1000 
+2000 
+3 
+Gradagem (2) 
+Hora 
+2 
+1000 
+2000 
+4 
+Adubacao de fundo 
+H/D 
+4 
+86 
+344 
+5 
+Sementeira 
+H/D 
+12 
+86 
+1032 
+6 
+Aplicacao de pesticidas 
+H/D 
+2 
+86 
+172 
+7 
+Sacha (1) 
+H/D 
+10 
+86 
+860 
+8 
+Sacha (2) 
+H/D 
+10 
+86 
+860 
+9 
+Colheita 
+H/D 
+10 
+86 
+860 
+10 
+Secagem 
+H/D 
+2 
+86 
+172 
+11 
+Debulha manual 
+H/D 
+30 
+86 
+2580 
+12 
+Aquisicao de pulverizadores 
+Unidade 
+4 
+1500 
+6000 
+13 
+Aplicaçao de fungicida 
+H/D 
+2 
+86 
+172 
+14 
+Aplicaçao de insecticidas 
+H/D 
+2 
+86 
+172 
+15 
+Transporte 
+Carrada 
+1 
+4500 
+4500 
+16 
+Aquisicao de Fungicida: Maconzeb 
+kg 
+1 
+430 
+430 
+17 
+Aquisicao Insecticidas: Acetamipride 
+L 
+1 
+800 
+800 
+18 
+Semente 
+kg/ha 
+100 
+80 
+8000 
+19 
+Fertilizante NPK: 12-24-12 
+kg/ha 
+300 
+70 
+21000 
+20 
+Material de Colheita 
+Sacos 
+20 
+200 
+4000 
+Sub-Total 
+58954 
+Outros encargos 
+10% 
+5895.4 
+Total geral 
+64849.4 
+ 
+Comercialização
+A comercialização deverá ser feita em grupo de produtores (associações) 
+para que haja melhor negociação de preços.Nesta tabela, pode-se calcular 
+os benefícios líquidos da produção de amendoim, selecciona-se a melhor 
+variedade local e melhor variedade melhorada. Basta conhecer o 
+rendimento de cada variedade (local e melhorada) e os preços dos factores 
+de produção e o custo de jornas.
+Se forem inclusos os custos de equipamentos (enxadas, catadas, machados, 
+etc, sem esquecer o periódo de vida útil) e custos de materiais (sacos, 
+peneiras, fios de sisal para alinhamento na época de sementeira), pode–se 
+calcular os lucros.
+Esta informação poderá ajudar ao produtor a decidir se vale apenas 
+produzir o amendoim para o mercado ou para auto-consumo. Ajuda 
+também ao produtor saber qual é o custo de produção de cada Kg de 
+amendoim e assim a estabelecer o preço de cada Kg de amendoim, 
+evitando desta forma a especulação de preços perpetuado pelos 
+comerciantes desonestos.
+14
+
+Av. das FPLM, Nº 2698, Caixa Postal 3658
+Tel.: (+258) 21460219 - Fax: (+258) 21460220
+Email: info@iiam.gov.mz
+Website: www.iiam.gov.mz
+Mavalane - Maputo - Moçambique
