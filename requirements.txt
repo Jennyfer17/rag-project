@@ -17,7 +17,10 @@ SQLAlchemy
 # --- LLM ---
 ollama
 
-# --- API (a implementar) ---
+# --- API ---
 fastapi
 uvicorn[standard]
 pydantic
+python-multipart
+twilio
+python-dotenv

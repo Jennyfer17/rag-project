@@ -33,7 +33,7 @@ Instruções:
 class ModelConfig:
     """Parâmetros externos do modelo LLaMA via Ollama."""
 
-    model_name: str = "llama3.2"
+    model_name: str = "llama3.1:8b"
     temperature: float = 0.7
     top_p: float = 0.9
     top_k: int = 40
