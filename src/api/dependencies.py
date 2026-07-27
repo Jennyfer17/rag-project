@@ -9,6 +9,7 @@ Isto evita recarregar os modelos de embedding a cada chamada.
 from functools import lru_cache
 
 from rag import RAGConfig, RAGPipeline
+from transcription import AudioTranscriber, TranscriptionConfig
 
 
 @lru_cache(maxsize=1)
@@ -21,3 +22,14 @@ def get_pipeline() -> RAGPipeline:
     """
     config = RAGConfig()
     return RAGPipeline(config)
+
+
+@lru_cache(maxsize=1)
+def get_transcriber() -> AudioTranscriber:
+    """
+    Devolve a instância singleton do AudioTranscriber.
+
+    Evita recarregar o modelo Whisper a cada mensagem de voz recebida.
+    """
+    config = TranscriptionConfig()
+    return AudioTranscriber(config)

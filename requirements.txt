@@ -24,3 +24,6 @@ pydantic
 python-multipart
 twilio
 python-dotenv
+
+# --- Transcrição de áudio ---
+faster-whisper

@@ -41,12 +41,6 @@ class VectorRetriever(BaseRetriever):
         self._collection = self._client.get_collection(config.collection_name)
 
     def retrieve(self, query: str) -> list[RetrievedDocument]:
-        """
-        Codifica a query e recupera os n_results chunks mais similares.
-
-        Retorna:
-            Lista de RetrievedDocument ordenada por relevância decrescente.
-        """
         query_embedding = self._embedding_model.encode(query).tolist()
 
         results = self._collection.query(
@@ -61,7 +55,6 @@ class VectorRetriever(BaseRetriever):
             results["metadatas"][0],
             results["distances"][0],
         ):
-            # Distância coseno ChromaDB ∈ [0, 2]; converter para similaridade ∈ [0, 1]
             similarity = 1.0 - (dist / 2.0)
             documents.append(
                 RetrievedDocument(

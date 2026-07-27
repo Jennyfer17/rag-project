@@ -10,9 +10,13 @@ class QueryRequest(BaseModel):
         max_length=1000,
         examples=["Quando devo fazer a sacha no milho?"],
     )
-    include_soil: bool = Field(
-        default=True,
-        description="Inclui os dados do solo no contexto da resposta.",
+    include_soil: bool | None = Field(
+        default=None,
+        description=(
+            "Inclui os dados do solo no contexto da resposta. "
+            "Se omitido, o sistema decide automaticamente com base em "
+            "palavras-chave presentes na pergunta."
+        ),
     )
 
 

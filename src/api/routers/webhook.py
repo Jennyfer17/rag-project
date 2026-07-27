@@ -2,10 +2,11 @@
 Router do webhook WhatsApp — integração com Twilio.
 
 Fluxo assíncrono (evita timeout do Twilio de ~15s):
-  1. Twilio envia POST com a mensagem do utilizador.
+  1. Twilio envia POST com a mensagem do utilizador (texto ou áudio).
   2. Respondemos imediatamente com TwiML vazio (acusa recepção).
-  3. O RAG processa em background (pode demorar minutos).
-  4. Enviamos a resposta via API REST do Twilio quando estiver pronta.
+  3. Se a mensagem for áudio, é transcrita para texto (módulo de Transcrição).
+  4. O RAG processa em background (pode demorar minutos).
+  5. Enviamos a resposta via API REST do Twilio quando estiver pronta.
 
 Variáveis de ambiente necessárias:
   TWILIO_ACCOUNT_SID  — Account SID do painel Twilio
@@ -18,11 +19,13 @@ import logging
 import os
 from xml.etree.ElementTree import Element, tostring
 
+import requests
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, Header, HTTPException, Request, status
 from fastapi.responses import Response
 
-from api.dependencies import get_pipeline
+from api.dependencies import get_pipeline, get_transcriber
 from rag import RAGPipeline
+from transcription import AudioTranscriber
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +69,37 @@ def _validate_twilio_signature(auth_token: str, url: str, params: dict, signatur
     return hmac.compare_digest(base64.b64encode(digest).decode(), signature)
 
 
+def _download_media(url: str) -> bytes:
+    """Descarrega um ficheiro de média do Twilio (protegido por auth básica)."""
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+    response = requests.get(url, auth=(account_sid, auth_token), timeout=30)
+    response.raise_for_status()
+    return response.content
+
+
+def _resolve_question(
+    body: str,
+    media_url: str | None,
+    media_content_type: str | None,
+    transcriber: AudioTranscriber,
+) -> str:
+    """
+    Resolve o texto da pergunta do utilizador.
+
+    Se o Body vier vazio e a mensagem tiver um anexo de áudio (nota de voz
+    do WhatsApp), descarrega o ficheiro e transcreve-o para texto.
+    """
+    if body:
+        return body
+
+    if media_url and (media_content_type or "").startswith("audio"):
+        audio_bytes = _download_media(media_url)
+        return transcriber.transcribe(audio_bytes)
+
+    return ""
+
+
 def _send_whatsapp_reply(to: str, from_: str, body: str) -> None:
     """Envia mensagem via API REST do Twilio (usado após processamento async)."""
     account_sid = os.getenv("TWILIO_ACCOUNT_SID")
@@ -88,14 +122,27 @@ def _send_whatsapp_reply(to: str, from_: str, body: str) -> None:
 # Background task
 # ---------------------------------------------------------------------------
 
-def _process_and_reply(question: str, to: str, from_: str, pipeline: RAGPipeline) -> None:
-    """Corre em background: chama o RAG e envia a resposta via Twilio REST."""
+def _process_and_reply(
+    body: str,
+    media_url: str | None,
+    media_content_type: str | None,
+    to: str,
+    from_: str,
+    pipeline: RAGPipeline,
+    transcriber: AudioTranscriber,
+) -> None:
+    """Corre em background: resolve a pergunta (texto ou áudio), chama o RAG e responde via Twilio REST."""
     try:
-        rag_response = pipeline.query(question=question, include_soil=True)
-        answer = _truncate(rag_response.answer)
-        logger.info("Resposta RAG gerada para %s (~%d palavras)", to, len(answer.split()))
+        question = _resolve_question(body, media_url, media_content_type, transcriber)
+        if not question:
+            logger.warning("Não foi possível obter texto da mensagem de %s", to)
+            answer = _FALLBACK_MESSAGE
+        else:
+            rag_response = pipeline.query(question=question)
+            answer = _truncate(rag_response.answer)
+            logger.info("Resposta RAG gerada para %s (~%d palavras)", to, len(answer.split()))
     except Exception as exc:
-        logger.error("Erro no RAG pipeline: %s", exc)
+        logger.error("Erro no processamento da mensagem: %s", exc)
         answer = _FALLBACK_MESSAGE
 
     _send_whatsapp_reply(to=to, from_=from_, body=answer)
@@ -117,11 +164,14 @@ async def whatsapp_webhook(
     request: Request,
     background_tasks: BackgroundTasks,
     pipeline: RAGPipeline = Depends(get_pipeline),
+    transcriber: AudioTranscriber = Depends(get_transcriber),
     MessageSid: str = Form(...),
     From: str = Form(...),
     To: str = Form(...),
-    Body: str = Form(...),
+    Body: str = Form(default=""),
     NumMedia: str = Form(default="0"),
+    MediaUrl0: str | None = Form(default=None),
+    MediaContentType0: str | None = Form(default=None),
     x_twilio_signature: str | None = Header(default=None, alias="X-Twilio-Signature"),
 ) -> Response:
 
@@ -133,15 +183,19 @@ async def whatsapp_webhook(
             logger.warning("Assinatura Twilio inválida — From=%s", From)
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Assinatura inválida.")
 
-    logger.info("Mensagem recebida: From=%s Body='%s'", From, Body[:100])
+    logger.info("Mensagem recebida: From=%s Body='%s' NumMedia=%s", From, Body[:100], NumMedia)
 
-    question = Body.strip()
+    body = Body.strip()
+    has_audio = NumMedia != "0" and bool(MediaUrl0)
 
-    if not question:
+    if not body and not has_audio:
         return Response(content=_empty_twiml(), media_type="application/xml")
 
-    # Processa o RAG em background e envia a resposta via Twilio REST
-    background_tasks.add_task(_process_and_reply, question, From, To, pipeline)
+    # Processa a mensagem em background (transcrevendo o áudio se necessário)
+    # e envia a resposta via Twilio REST
+    background_tasks.add_task(
+        _process_and_reply, body, MediaUrl0, MediaContentType0, From, To, pipeline, transcriber
+    )
 
     # Responde imediatamente ao Twilio para evitar timeout
     return Response(content=_empty_twiml(), media_type="application/xml")

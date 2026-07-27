@@ -5,16 +5,18 @@ A classe RAGPipeline é o ponto de entrada único do sistema e será consumida
 directamente pela API FastAPI.
 
 Fluxo de uma query:
-  1. VectorRetriever  → recupera chunks similares do ChromaDB
-  2. SoilRetriever    → carrega propriedades do solo da BD relacional
-  3. ContextBuilder   → monta o bloco de contexto aumentado
-  4. LLaMAGenerator   → gera a resposta final com o LLaMA
+  1. SoilQueryRouter  → decide se a pergunta necessita dos dados do solo
+  2. VectorRetriever  → recupera chunks similares do ChromaDB
+  3. SoilRetriever    → carrega propriedades do solo da BD relacional (se aplicável)
+  4. ContextBuilder   → monta o bloco de contexto aumentado
+  5. LLaMAGenerator   → gera a resposta final com o LLaMA
 """
 
 from .config import RAGConfig
 from .context_builder import ContextBuilder
 from .generator import LLaMAGenerator
 from .models import RAGResponse
+from .query_router import SoilQueryRouter
 from .retriever import SoilRetriever, VectorRetriever
 
 
@@ -38,22 +40,28 @@ class RAGPipeline:
         self._soil_retriever = SoilRetriever(self._config.retriever)
         self._context_builder = ContextBuilder()
         self._generator = LLaMAGenerator(self._config.model)
+        self._query_router = SoilQueryRouter()
 
     # ------------------------------------------------------------------
     # Interface pública
     # ------------------------------------------------------------------
 
-    def query(self, question: str, include_soil: bool = True) -> RAGResponse:
+    def query(self, question: str, include_soil: bool | None = None) -> RAGResponse:
         """
         Processa uma pergunta e retorna a resposta aumentada pelo contexto.
 
         Parâmetros:
             question     : pergunta do agricultor em linguagem natural
-            include_soil : se True, inclui os dados do solo no contexto
+            include_soil : se True/False, força a inclusão/exclusão dos dados
+                           do solo. Se None (omitido), o SoilQueryRouter decide
+                           automaticamente com base em palavras-chave da pergunta.
 
         Retorna:
             RAGResponse com a resposta, documentos recuperados e dados de solo.
         """
+        if include_soil is None:
+            include_soil = self._query_router.should_use_soil_data(question)
+
         vector_docs = self._vector_retriever.retrieve(question)
         soil_properties = self._soil_retriever.retrieve() if include_soil else []
 
