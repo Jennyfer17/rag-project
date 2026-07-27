@@ -7,16 +7,18 @@ directamente pela API FastAPI.
 Fluxo de uma query:
   1. ConversationMemory → recupera o histórico da sessão (se aplicável)
   2. QueryReformulator  → reescreve perguntas de seguimento como perguntas autónomas
-  3. SoilQueryRouter    → decide se a pergunta necessita dos dados do solo
-  4. VectorRetriever    → recupera chunks similares do ChromaDB
-  5. SoilRetriever      → carrega propriedades do solo da BD relacional (se aplicável)
-  6. ContextBuilder     → monta o bloco de contexto aumentado
-  7. LLaMAGenerator     → gera a resposta final com o LLaMA
+  3. DomainGuard        → recusa perguntas fora do domínio agrícola
+  4. SoilQueryRouter    → decide se a pergunta necessita dos dados do solo
+  5. VectorRetriever    → recupera chunks similares do ChromaDB
+  6. SoilRetriever      → carrega propriedades do solo da BD relacional (se aplicável)
+  7. ContextBuilder     → monta o bloco de contexto aumentado
+  8. LLaMAGenerator     → gera a resposta final com o LLaMA
 """
 
 from .config import RAGConfig
 from .context_builder import ContextBuilder
 from .conversation import ConversationMemory
+from .domain_guard import OUT_OF_DOMAIN_MESSAGE, DomainGuard
 from .generator import LLaMAGenerator
 from .models import RAGResponse
 from .query_reformulator import QueryReformulator
@@ -46,6 +48,7 @@ class RAGPipeline:
         self._generator = LLaMAGenerator(self._config.model)
         self._query_router = SoilQueryRouter()
         self._query_reformulator = QueryReformulator(self._config.model)
+        self._domain_guard = DomainGuard(self._config.model)
         self._conversation_memory = ConversationMemory(self._config.conversation.max_turns)
 
     # ------------------------------------------------------------------
@@ -86,6 +89,18 @@ class RAGPipeline:
         # a usar para recuperação e classificação. A pergunta original é
         # mantida para a geração da resposta e para o histórico da conversa.
         retrieval_query = self._query_reformulator.reformulate(question, history)
+
+        if not self._domain_guard.is_in_domain(retrieval_query):
+            answer = OUT_OF_DOMAIN_MESSAGE
+            if session_id:
+                self._conversation_memory.add_turn(session_id, question, answer)
+            return RAGResponse(
+                question=question,
+                answer=answer,
+                retrieved_documents=[],
+                soil_context=[],
+                model_name=self._generator.model_name,
+            )
 
         if include_soil is None:
             include_soil = self._query_router.should_use_soil_data(retrieval_query)
