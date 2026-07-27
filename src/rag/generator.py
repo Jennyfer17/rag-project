@@ -39,12 +39,16 @@ class LLaMAGenerator:
         system_prompt: str,
         context: str,
         question: str,
+        history: list[dict] | None = None,
     ) -> str:
         """
         Gera uma resposta fundamentada no contexto recuperado.
 
         O contexto e a pergunta são combinados numa única mensagem de utilizador
-        para que o modelo os processe conjuntamente.
+        para que o modelo os processe conjuntamente. Se for fornecido um
+        histórico (trocas anteriores da mesma conversa), este é inserido antes
+        da mensagem actual para que o modelo consiga responder a perguntas de
+        seguimento (ex: "e para o feijão?").
 
         Lança:
             RuntimeError se o modelo não estiver disponível no servidor Ollama.
@@ -54,13 +58,15 @@ class LLaMAGenerator:
             f"Pergunta do agricultor: {question}"
         )
 
+        messages = [{"role": "system", "content": system_prompt}]
+        if history:
+            messages.extend(history)
+        messages.append({"role": "user", "content": user_message})
+
         try:
             response = self._client.chat(
                 model=self._config.model_name,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message},
-                ],
+                messages=messages,
                 options=self._options,
             )
         except ResponseError as exc:

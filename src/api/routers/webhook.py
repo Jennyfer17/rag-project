@@ -138,7 +138,10 @@ def _process_and_reply(
             logger.warning("Não foi possível obter texto da mensagem de %s", to)
             answer = _FALLBACK_MESSAGE
         else:
-            rag_response = pipeline.query(question=question)
+            # `to` é o número WhatsApp do utilizador (destino da resposta),
+            # usado como session_id para manter o contexto da conversa entre
+            # perguntas de seguimento.
+            rag_response = pipeline.query(question=question, session_id=to)
             answer = _truncate(rag_response.answer)
             logger.info("Resposta RAG gerada para %s (~%d palavras)", to, len(answer.split()))
     except Exception as exc:

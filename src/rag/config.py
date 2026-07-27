@@ -64,9 +64,17 @@ class RetrieverConfig:
 
 
 @dataclass
+class ConversationConfig:
+    """Parâmetros da memória de conversa usada para perguntas de seguimento."""
+
+    max_turns: int = 5
+
+
+@dataclass
 class RAGConfig:
     """Configuração completa do pipeline RAG."""
 
     model: ModelConfig = field(default_factory=ModelConfig)
     retriever: RetrieverConfig = field(default_factory=RetrieverConfig)
+    conversation: ConversationConfig = field(default_factory=ConversationConfig)
     system_prompt: str = SYSTEM_PROMPT

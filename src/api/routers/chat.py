@@ -33,6 +33,7 @@ def query(
         response = pipeline.query(
             question=body.question,
             include_soil=body.include_soil,
+            session_id=body.session_id,
         )
     except RuntimeError as exc:
         raise HTTPException(

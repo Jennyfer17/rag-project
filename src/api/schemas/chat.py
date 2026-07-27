@@ -18,6 +18,14 @@ class QueryRequest(BaseModel):
             "palavras-chave presentes na pergunta."
         ),
     )
+    session_id: str | None = Field(
+        default=None,
+        description=(
+            "Identificador da conversa, usado para manter o histórico entre "
+            "perguntas de seguimento. Se omitido, a pergunta é tratada de "
+            "forma independente, sem memória de conversas anteriores."
+        ),
+    )
 
 
 class SourceDocument(BaseModel):
