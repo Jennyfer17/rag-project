@@ -14,6 +14,7 @@ import logging
 import ollama
 
 from .config import ModelConfig
+from .text_utils import normalize_text
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,27 @@ Regras:
 - Se a pergunta já for autónoma e não depender da história, devolve-a exactamente como está.
 - Mantém o significado original — não acrescentes informação nova.
 - Devolve apenas a pergunta reformulada, sem explicações nem aspas."""
+
+# Marcadores típicos de perguntas elípticas/anafóricas que dependem do
+# histórico (ex: "e para o feijão?", "isso funciona também?").
+_FOLLOWUP_MARKERS: tuple[str, ...] = (
+    "e ", "e?", "isso", "esse", "essa", "esses", "essas", "aquele", "aquela",
+    "tambem", "entao", "depois disso", "nesse caso", "nessa", "disso",
+    "e agora", "e depois", "e sobre",
+)
+
+
+def _looks_self_contained(question: str) -> bool:
+    """
+    Heurística: perguntas curtas ou que começam com marcadores anafóricos
+    típicos de perguntas de seguimento provavelmente dependem do histórico.
+    Perguntas mais longas e sem esses marcadores são tratadas como já
+    autónomas, poupando uma chamada ao LLM.
+    """
+    normalized = normalize_text(question.strip())
+    if len(normalized.split()) <= 4:
+        return False
+    return not any(normalized.startswith(marker) for marker in _FOLLOWUP_MARKERS)
 
 
 class QueryReformulator:
@@ -42,12 +64,13 @@ class QueryReformulator:
         """
         Reformula `question` como pergunta autónoma com base em `history`.
 
-        Se `history` estiver vazio, devolve a pergunta original sem chamar o
-        modelo — não há contexto de conversa para resolver. Se a chamada ao
-        modelo falhar por qualquer razão, também recorre à pergunta original
-        em vez de interromper o fluxo do pipeline.
+        Se `history` estiver vazio, ou se a pergunta já parecer autónoma
+        (heurística — ver `_looks_self_contained`), devolve a pergunta
+        original sem chamar o modelo. Se a chamada ao modelo falhar por
+        qualquer razão, também recorre à pergunta original em vez de
+        interromper o fluxo do pipeline.
         """
-        if not history:
+        if not history or _looks_self_contained(question):
             return question
 
         history_text = "\n".join(

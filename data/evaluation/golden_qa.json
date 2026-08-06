@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Como evitar que pragas apareçam na minha machamba?",
+    "ground_truth": "A melhor forma de evitar pragas é a prevenção, com várias práticas em conjunto: faça a rotação de culturas, para não repetir a mesma família na mesma parcela; use plântulas e sementes sãs; plante plantas repelentes nas bordas ou entre as culturas, como alho, hortelã, cravo-de-defunto, coentro ou manjericão; observe as folhas com regularidade, de preferência uma vez por semana, para apanhar o ataque no início; destrua os restos das culturas logo após a colheita, porque é aí que as pragas ficam; e mantenha as plantas bem regadas e o solo com matéria orgânica, pois plantas sem stress resistem melhor. Pode ainda usar armadilhas e biopesticidas (como a margosa) de forma preventiva."
+  },
+  {
+    "question": "Com quais culturas posso juntar a alface e a couve na mesma machamba?",
+    "ground_truth": "Juntar culturas na mesma machamba chama-se consociação e ajuda a aproveitar melhor o espaço e a afastar pragas. A alface combina bem com a cebola, cenoura, couve, feijão, morango, pepino, rabanete, tomate e ervilha. A couve combina bem com acelga, alface, alho-francês, batata, beterraba, ervilha, espinafre, rabanete e tomate. Repare que a alface e a couve também se dão bem uma com a outra, por isso pode juntá-las no mesmo canteiro."
+  },
+  {
+    "question": "Toda a minha couve está a acabar por causa de uns bichinhos verdes, estão a comer as folhas. O que devo fazer?",
+    "ground_truth": "Isso parece ser uma lagarta que ataca a couve. Para eu confirmar qual é: as lagartas são pequenas e estão espalhadas, ou são maiores e andam em grupo, deixando teias e sujidade nas folhas? De qualquer forma, pode já começar assim: percorra a machamba uma vez por semana e arranque as folhas muito atacadas; aplique um biopesticida de margosa (pó de sementes 20 a 50g por litro de água, ou pó de folhas 100g por litro, misturado com um pouco de sabão líquido - cerca de 10ml em 20 litros - para agarrar melhor à folha); e queime ou enterre bem os restos da cultura depois da colheita, porque é aí que a praga continua. Ajuda também consociar a couve com alho, cebola, coentro, pimento ou feijão. Só deve aplicar insecticida se encontrar mais de uma lagarta por planta."
+  },
+  {
+    "question": "Plantei alface mas não está a crescer bem. O que devo fazer?",
+    "ground_truth": "Para eu perceber a causa, diga-me só uma coisa: as plantas estão muito juntas umas das outras, as folhas estão amareladas, ou o solo está encharcado ou muito seco? Entretanto, verifiquei o mais comum: se plantou a alface muito junta, as plantas competem por água e nutrientes e não crescem bem - o espaço deve ser de 20 a 25cm para variedades pequenas e 30 a 35cm para as grandes. Confirme também a adubação: a alface gosta de solo com matéria orgânica, e a adubação de cobertura deve ser feita aos 7, 14 e 21 dias depois do transplante. E a rega deve deixar o solo húmido, mas sem encharcar. A alface também cresce melhor em tempo fresco, por isso no calor forte convém usar variedades resistentes ao calor. Diga-me o que observa e ajudo a refinar."
+  },
+  {
+    "question": "Não consigo encontrar sementes de qualidade para as minhas culturas, o que devo fazer?",
+    "ground_truth": "Uma boa solução, quando é difícil comprar sementes de qualidade, é produzir as suas próprias sementes na machamba. Assim tem sementes adaptadas à sua zona, mais resistentes, e reduz a dependência das lojas e os custos. Para a couve e a alface: escolha as plantas mais bonitas, saudáveis e bem produtivas; deixe-as florescer até darem sementes; recolha as sementes e deixe-as secar num local sem humidade; e guarde-as num recipiente limpo e bem fechado, em lugar fresco e ventilado. Recomenda-se reservar cerca de 5 a 10% da sua produção para fazer sementes. Quer que eu explique como fazer para alguma cultura em concreto?"
+  }
+]

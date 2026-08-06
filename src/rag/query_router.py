@@ -7,7 +7,7 @@ deve ser incluído na resposta, evitando consultas desnecessárias à BD
 quando a pergunta não tem relação com propriedades do solo.
 """
 
-import unicodedata
+from .text_utils import normalize_text
 
 
 class SoilQueryRouter:
@@ -36,7 +36,7 @@ class SoilQueryRouter:
 
     def __init__(self, keywords: tuple[str, ...] | None = None) -> None:
         self._keywords = tuple(
-            self._normalize(kw) for kw in (keywords or self._DEFAULT_KEYWORDS)
+            normalize_text(kw) for kw in (keywords or self._DEFAULT_KEYWORDS)
         )
 
     def should_use_soil_data(self, question: str) -> bool:
@@ -45,11 +45,5 @@ class SoilQueryRouter:
         com o solo, indicando que os dados edafológicos devem ser incluídos
         no contexto da resposta.
         """
-        normalized_question = self._normalize(question)
+        normalized_question = normalize_text(question)
         return any(keyword in normalized_question for keyword in self._keywords)
-
-    @staticmethod
-    def _normalize(text: str) -> str:
-        """Remove acentos e converte para minúsculas para comparação robusta."""
-        decomposed = unicodedata.normalize("NFKD", text.lower())
-        return "".join(ch for ch in decomposed if not unicodedata.combining(ch))

@@ -2,9 +2,10 @@
 Router do webhook WhatsApp — integração com Twilio.
 
 Fluxo assíncrono (evita timeout do Twilio de ~15s):
-  1. Twilio envia POST com a mensagem do utilizador (texto ou áudio).
+  1. Twilio envia POST com a mensagem do utilizador (texto, áudio ou imagem).
   2. Respondemos imediatamente com TwiML vazio (acusa recepção).
   3. Se a mensagem for áudio, é transcrita para texto (módulo de Transcrição).
+     Se for imagem, é descrita em texto (módulo de Descrição de Imagens).
   4. O RAG processa em background (pode demorar minutos).
   5. Enviamos a resposta via API REST do Twilio quando estiver pronta.
 
@@ -23,7 +24,8 @@ import requests
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, Header, HTTPException, Request, status
 from fastapi.responses import Response
 
-from api.dependencies import get_pipeline, get_transcriber
+from api.dependencies import get_image_describer, get_pipeline, get_transcriber
+from image_description import ImageDescriber
 from rag import RAGPipeline
 from transcription import AudioTranscriber
 
@@ -83,17 +85,32 @@ def _resolve_question(
     media_url: str | None,
     media_content_type: str | None,
     transcriber: AudioTranscriber,
+    image_describer: ImageDescriber,
 ) -> str:
     """
     Resolve o texto da pergunta do utilizador.
 
-    Se o Body vier vazio e a mensagem tiver um anexo de áudio (nota de voz
-    do WhatsApp), descarrega o ficheiro e transcreve-o para texto.
+    Se a mensagem tiver um anexo de imagem (ex: foto de uma planta ou praga),
+    descarrega-a e obtém uma descrição textual (módulo de Descrição de
+    Imagens); se vier acompanhada de legenda (Body), a legenda é combinada
+    com a descrição, já que dá contexto valioso sobre o que o agricultor
+    quer saber. Caso contrário, se o Body vier vazio e a mensagem tiver um
+    anexo de áudio (nota de voz do WhatsApp), descarrega o ficheiro e
+    transcreve-o para texto.
     """
+    content_type = media_content_type or ""
+
+    if media_url and content_type.startswith("image"):
+        image_bytes = _download_media(media_url)
+        description = image_describer.describe(image_bytes)
+        if body:
+            return f"{body}\n\n[Imagem enviada pelo utilizador: {description}]"
+        return description
+
     if body:
         return body
 
-    if media_url and (media_content_type or "").startswith("audio"):
+    if media_url and content_type.startswith("audio"):
         audio_bytes = _download_media(media_url)
         return transcriber.transcribe(audio_bytes)
 
@@ -130,10 +147,11 @@ def _process_and_reply(
     from_: str,
     pipeline: RAGPipeline,
     transcriber: AudioTranscriber,
+    image_describer: ImageDescriber,
 ) -> None:
-    """Corre em background: resolve a pergunta (texto ou áudio), chama o RAG e responde via Twilio REST."""
+    """Corre em background: resolve a pergunta (texto, áudio ou imagem), chama o RAG e responde via Twilio REST."""
     try:
-        question = _resolve_question(body, media_url, media_content_type, transcriber)
+        question = _resolve_question(body, media_url, media_content_type, transcriber, image_describer)
         if not question:
             logger.warning("Não foi possível obter texto da mensagem de %s", to)
             answer = _FALLBACK_MESSAGE
@@ -168,6 +186,7 @@ async def whatsapp_webhook(
     background_tasks: BackgroundTasks,
     pipeline: RAGPipeline = Depends(get_pipeline),
     transcriber: AudioTranscriber = Depends(get_transcriber),
+    image_describer: ImageDescriber = Depends(get_image_describer),
     MessageSid: str = Form(...),
     From: str = Form(...),
     To: str = Form(...),
@@ -189,15 +208,23 @@ async def whatsapp_webhook(
     logger.info("Mensagem recebida: From=%s Body='%s' NumMedia=%s", From, Body[:100], NumMedia)
 
     body = Body.strip()
-    has_audio = NumMedia != "0" and bool(MediaUrl0)
+    has_media = NumMedia != "0" and bool(MediaUrl0)
 
-    if not body and not has_audio:
+    if not body and not has_media:
         return Response(content=_empty_twiml(), media_type="application/xml")
 
-    # Processa a mensagem em background (transcrevendo o áudio se necessário)
-    # e envia a resposta via Twilio REST
+    # Processa a mensagem em background (transcrevendo o áudio ou descrevendo
+    # a imagem, conforme o tipo de anexo) e envia a resposta via Twilio REST
     background_tasks.add_task(
-        _process_and_reply, body, MediaUrl0, MediaContentType0, From, To, pipeline, transcriber
+        _process_and_reply,
+        body,
+        MediaUrl0,
+        MediaContentType0,
+        From,
+        To,
+        pipeline,
+        transcriber,
+        image_describer,
     )
 
     # Responde imediatamente ao Twilio para evitar timeout

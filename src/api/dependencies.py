@@ -8,6 +8,7 @@ Isto evita recarregar os modelos de embedding a cada chamada.
 
 from functools import lru_cache
 
+from image_description import ImageDescriber, ImageDescriptionConfig
 from rag import RAGConfig, RAGPipeline
 from transcription import AudioTranscriber, TranscriptionConfig
 
@@ -33,3 +34,14 @@ def get_transcriber() -> AudioTranscriber:
     """
     config = TranscriptionConfig()
     return AudioTranscriber(config)
+
+
+@lru_cache(maxsize=1)
+def get_image_describer() -> ImageDescriber:
+    """
+    Devolve a instância singleton do ImageDescriber.
+
+    Evita recarregar o modelo moondream2 a cada imagem recebida.
+    """
+    config = ImageDescriptionConfig()
+    return ImageDescriber(config)

@@ -2,6 +2,13 @@
 Guarda de domínio — restringe as respostas do sistema a perguntas
 relacionadas com agricultura, recusando educadamente perguntas fora desse
 âmbito antes de gastar recursos com recuperação e geração.
+
+Por latência, a classificação é feita em duas camadas:
+  1. Filtro por palavras-chave (instantâneo, sem chamar o LLM) — cobre a
+     grande maioria dos casos: perguntas claramente agrícolas, cumprimentos,
+     e perguntas claramente fora do domínio.
+  2. Classificação pelo LLM — usada apenas para os casos ambíguos que não
+     batem com nenhuma das listas de palavras-chave.
 """
 
 import logging
@@ -9,6 +16,7 @@ import logging
 import ollama
 
 from .config import ModelConfig
+from .text_utils import normalize_text
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +40,43 @@ Responde apenas com uma palavra:
 - SIM, se a pergunta está dentro do domínio agrícola (ou é um cumprimento/agradecimento)
 - NAO, se está fora desse domínio (ex: política, desporto, entretenimento, saúde humana, tecnologia não agrícola, etc.)"""
 
+# Correspondência instantânea (sem custo de inferência) para os casos claros —
+# evita a chamada ao LLM na maioria das perguntas reais dos agricultores.
+_IN_DOMAIN_KEYWORDS: tuple[str, ...] = (
+    # cumprimentos / cortesia
+    "ola", "bom dia", "boa tarde", "boa noite", "obrigado", "obrigada",
+    "tudo bem", "como estas", "adeus", "ate logo", "ate a proxima",
+    # culturas
+    "milho", "feijao", "mandioca", "amendoim", "banana", "cogumelo",
+    "inhame", "alface", "arroz", "tomate", "batata", "hortalica", "sorgo",
+    "girassol", "matiti",
+    # práticas agrícolas
+    "agricultura", "agricola", "agronomo", "machamba", "cultura", "cultivo",
+    "cultivar", "plantar", "plantacao", "sementeira", "semente", "sacha",
+    "amontoa", "rega", "regar", "irrigacao", "colheita", "colher", "poda",
+    "rotacao de culturas", "consorciacao",
+    # pragas e doenças das plantas
+    "praga", "pragas", "lagarta", "gafanhoto", "fungicida", "pesticida",
+    "herbicida", "inseticida", "doenca da planta", "doenca das plantas",
+    "doenca da cultura",
+    # solo e nutrição (alinhado com SoilQueryRouter)
+    "solo", "solos", "terra", "terreno", "adubo", "adubacao", "fertilizante",
+    "fertilizacao", "fertilidade", "nutriente", "nutrientes", "azoto",
+    "fosforo", "potassio", "materia organica", "composto", "estrume",
+)
+
+_OUT_OF_DOMAIN_KEYWORDS: tuple[str, ...] = (
+    "politica", "eleicoes", "presidente da republica", "futebol", "desporto",
+    "campeonato", "musica", "cantor", "filme", "cinema", "telemovel",
+    "smartphone", "computador portatil", "rede social", "criptomoeda",
+    "bolsa de valores", "namoro", "receita de bolo", "medicamento",
+    "hospital", "covid",
+)
+
 
 class DomainGuard:
     """
-    Verifica se uma pergunta pertence ao domínio agrícola, usando o LLM
-    como classificador binário.
+    Verifica se uma pergunta pertence ao domínio agrícola.
     """
 
     def __init__(self, config: ModelConfig) -> None:
@@ -48,6 +88,20 @@ class DomainGuard:
         Retorna True se a pergunta pertence ao domínio agrícola (ou é um
         cumprimento/agradecimento), False caso contrário.
 
+        Tenta primeiro resolver por palavras-chave; só recorre ao LLM quando
+        a pergunta é ambígua (não bate com nenhuma das listas conhecidas).
+        """
+        normalized = normalize_text(question)
+
+        if any(keyword in normalized for keyword in _IN_DOMAIN_KEYWORDS):
+            return True
+        if any(keyword in normalized for keyword in _OUT_OF_DOMAIN_KEYWORDS):
+            return False
+
+        return self._classify_with_llm(question)
+
+    def _classify_with_llm(self, question: str) -> bool:
+        """
         Em caso de falha na chamada ao modelo, assume True (fail-open) — a
         recusa de uma pergunta não deve depender de uma classificação extra
         que pode falhar independentemente do resto do pipeline.

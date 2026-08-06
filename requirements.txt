@@ -27,3 +27,37 @@ python-dotenv
 
 # --- Transcrição de áudio ---
 faster-whisper
+
+# --- Descrição de imagens (moondream2, via transformers) ---
+torch
+# O código remoto (trust_remote_code) do moondream2 declara no seu config.json
+# ter sido testado com transformers==4.52.4. A série 5.x da transformers
+# refactorizou internamente o mecanismo de "tied weights"
+# (self.all_tied_weights_keys), que o código do moondream2 não implementa —
+# isto não só rebenta com AttributeError ao carregar, como, se contornado à
+# força, corrompe pesos que deveriam estar amarrados (o modelo gera texto sem
+# sentido). Fixamos a versão compatível em vez de usar a mais recente.
+# (sentence-transformers exige transformers<6.0,>=4.41, por isso 4.52.4 serve
+# também para os embeddings do RAG.)
+transformers==4.52.4
+einops
+timm
+accelerate
+pillow
+# pyvips é usado internamente pelo código remoto (trust_remote_code) do
+# moondream2 para pré-processar imagens. No Windows, o pacote "pyvips" sozinho
+# não traz a biblioteca nativa libvips (dá "cannot load library
+# 'libvips-42.dll'") — "pyvips-binary" empacota os DLLs pré-compilados para a
+# plataforma, sem exigir instalação manual do libvips no sistema.
+pyvips
+pyvips-binary
+
+# --- Avaliação do RAG ---
+# ragas>=0.3.5 exige "scikit-network", que não tem wheel pré-compilada para
+# esta versão do Python no Windows (precisaria de Visual C++ Build Tools).
+# 0.3.0 é a última versão sem essa dependência e funciona com o langchain
+# actual — ver o comentário em src/evaluation/__init__.py sobre o shim do
+# VertexAI necessário para a importar.
+ragas==0.3.0
+langchain-ollama
+langchain-google-vertexai

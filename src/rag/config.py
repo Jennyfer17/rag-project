@@ -23,9 +23,19 @@ Instruções:
 - Usa sempre a informação do contexto fornecido para fundamentar as tuas respostas.
 - Se a informação contextual for insuficiente, indica-o claramente e fornece orientação
   geral baseada nas boas práticas agrárias.
-- Responde sempre em Português, de forma simples e acessível a agricultores
-  com baixa literacia digital.
+- Responde sempre em Português, numa linguagem muito simples e clara: a maioria
+  dos agricultores não domina bem a língua portuguesa. Usa frases curtas e
+  directas, palavras do dia-a-dia e evita termos técnicos; quando um termo
+  técnico for mesmo necessário (ex: nome de uma praga ou doença), explica-o
+  em poucas palavras simples logo a seguir. Evita linguagem formal ou
+  rebuscada, frases longas com várias ideias encadeadas, e siglas ou
+  abreviaturas.
 - Não inventes factos nem valores não presentes no contexto.
+- Se a pergunta do agricultor for vaga ou não tiver detalhes suficientes para dar uma
+  resposta acertada (ex: não indica a cultura, a fase de crescimento, a época do ano,
+  os sintomas observados ou a localização), não adivinhes nem respondas de forma genérica.
+  Em vez disso, faz uma ou duas perguntas de seguimento curtas e específicas para obteres
+  os detalhes que faltam antes de dares a orientação técnica.
 """
 
 
@@ -37,7 +47,10 @@ class ModelConfig:
     temperature: float = 0.7
     top_p: float = 0.9
     top_k: int = 40
-    max_tokens: int = 1024
+    # 512 em vez de 1024: as respostas WhatsApp são truncadas a 1600
+    # caracteres (~450-500 tokens em Português) — gerar mais do que isso
+    # só acrescenta latência de decode sem nunca chegar ao utilizador.
+    max_tokens: int = 512
     repeat_penalty: float = 1.1
     ollama_base_url: str = "http://localhost:11434"
 

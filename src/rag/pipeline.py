@@ -13,7 +13,13 @@ Fluxo de uma query:
   6. SoilRetriever      → carrega propriedades do solo da BD relacional (se aplicável)
   7. ContextBuilder     → monta o bloco de contexto aumentado
   8. LLaMAGenerator     → gera a resposta final com o LLaMA
+
+Nota de desempenho: os passos 5 e 6 são independentes entre si (não há
+dependência de dados um do outro) e correm em paralelo numa thread pool
+quando ambos são necessários, para reduzir a latência total da consulta.
 """
+
+from concurrent.futures import ThreadPoolExecutor
 
 from .config import RAGConfig
 from .context_builder import ContextBuilder
@@ -50,6 +56,9 @@ class RAGPipeline:
         self._query_reformulator = QueryReformulator(self._config.model)
         self._domain_guard = DomainGuard(self._config.model)
         self._conversation_memory = ConversationMemory(self._config.conversation.max_turns)
+        self._retrieval_executor = ThreadPoolExecutor(
+            max_workers=2, thread_name_prefix="rag-retrieval"
+        )
 
     # ------------------------------------------------------------------
     # Interface pública
@@ -105,8 +114,18 @@ class RAGPipeline:
         if include_soil is None:
             include_soil = self._query_router.should_use_soil_data(retrieval_query)
 
-        vector_docs = self._vector_retriever.retrieve(retrieval_query)
-        soil_properties = self._soil_retriever.retrieve() if include_soil else []
+        if include_soil:
+            # Recuperação vectorial (ChromaDB) e recuperação do solo (SQLite)
+            # são independentes — correm em paralelo para reduzir a latência.
+            docs_future = self._retrieval_executor.submit(
+                self._vector_retriever.retrieve, retrieval_query
+            )
+            soil_future = self._retrieval_executor.submit(self._soil_retriever.retrieve)
+            vector_docs = docs_future.result()
+            soil_properties = soil_future.result()
+        else:
+            vector_docs = self._vector_retriever.retrieve(retrieval_query)
+            soil_properties = []
 
         context = self._context_builder.build(vector_docs, soil_properties)
 
