@@ -10,6 +10,7 @@ from functools import lru_cache
 
 from image_description import ImageDescriber, ImageDescriptionConfig
 from rag import RAGConfig, RAGPipeline
+from text_to_speech import TextToSpeech, TextToSpeechConfig
 from transcription import AudioTranscriber, TranscriptionConfig
 
 
@@ -45,3 +46,14 @@ def get_image_describer() -> ImageDescriber:
     """
     config = ImageDescriptionConfig()
     return ImageDescriber(config)
+
+
+@lru_cache(maxsize=1)
+def get_synthesizer() -> TextToSpeech:
+    """
+    Devolve a instância singleton do TextToSpeech.
+
+    Evita recarregar o modelo de voz Piper a cada resposta em áudio.
+    """
+    config = TextToSpeechConfig()
+    return TextToSpeech(config)

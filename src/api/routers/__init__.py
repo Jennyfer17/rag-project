@@ -1,3 +1,3 @@
-from . import chat, health, webhook
+from . import chat, health, media, webhook
 
-__all__ = ["chat", "health", "webhook"]
+__all__ = ["chat", "health", "media", "webhook"]

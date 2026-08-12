@@ -52,6 +52,14 @@ pillow
 pyvips
 pyvips-binary
 
+# --- Síntese de voz (Piper, para responder por áudio a notas de voz) ---
+piper-tts
+# `av` (PyAV) já é uma dependência transitiva do faster-whisper — usamo-la
+# também aqui, explicitamente, para converter o WAV nativo do Piper para
+# OGG/Opus (o formato que o WhatsApp espera nas notas de voz) sem precisar
+# de um `ffmpeg` instalado no sistema (o PyAV traz o ffmpeg embutido).
+av
+
 # --- Avaliação do RAG ---
 # ragas>=0.3.5 exige "scikit-network", que não tem wheel pré-compilada para
 # esta versão do Python no Windows (precisaria de Visual C++ Build Tools).

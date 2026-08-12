@@ -25,7 +25,7 @@ from fastapi.responses import JSONResponse
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from api.dependencies import get_pipeline
-from api.routers import chat, health, webhook
+from api.routers import chat, health, media, webhook
 
 logging.basicConfig(
     level=logging.INFO,
@@ -83,6 +83,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(webhook.router)
+app.include_router(media.router)
 
 
 # ---------------------------------------------------------------------------
@@ -100,5 +101,6 @@ def root() -> JSONResponse:
             "health":           "GET  /health",
             "query":            "POST /query",
             "whatsapp_webhook": "POST /webhook/whatsapp",
+            "media":            "GET  /media/{filename}",
         },
     })
