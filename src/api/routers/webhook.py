@@ -45,6 +45,11 @@ _FALLBACK_MESSAGE = (
     "Por favor tente novamente mais tarde."
 )
 
+_EMPTY_MESSAGE = (
+    "Não recebi nenhuma pergunta. Escreva a sua pergunta sobre a sua "
+    "machamba, ou envie uma nota de voz ou uma foto da planta."
+)
+
 _PROCESSING_MESSAGE = (
     "A processar a sua pergunta... Receberá a resposta em breve."
 )
@@ -223,11 +228,15 @@ async def whatsapp_webhook(
 ) -> Response:
 
     # --- Validação de assinatura (activa se TWILIO_AUTH_TOKEN estiver definido) ---
+    # Com o token definido, a assinatura é obrigatória: um pedido sem ela não
+    # vem do Twilio e não pode ser aceite.
     auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-    if auth_token and x_twilio_signature:
+    if auth_token:
         form_data = dict(await request.form())
-        if not _validate_twilio_signature(auth_token, str(request.url), form_data, x_twilio_signature):
-            logger.warning("Assinatura Twilio inválida — From=%s", From)
+        if not x_twilio_signature or not _validate_twilio_signature(
+            auth_token, str(request.url), form_data, x_twilio_signature
+        ):
+            logger.warning("Assinatura Twilio ausente ou inválida — From=%s", From)
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Assinatura inválida.")
 
     logger.info("Mensagem recebida: From=%s Body='%s' NumMedia=%s", From, Body[:100], NumMedia)
@@ -237,6 +246,7 @@ async def whatsapp_webhook(
     is_audio_message = has_media and (MediaContentType0 or "").startswith("audio")
 
     if not body and not has_media:
+        background_tasks.add_task(_send_whatsapp_reply, to=From, from_=To, body=_EMPTY_MESSAGE)
         return Response(content=_empty_twiml(), media_type="application/xml")
 
     # Captura o URL público deste servidor (o mesmo que o Twilio usou para

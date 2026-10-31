@@ -25,6 +25,9 @@ python-multipart
 twilio
 python-dotenv
 
+# --- Testes ---
+pytest
+
 # --- Transcrição de áudio ---
 faster-whisper
 
@@ -67,5 +70,6 @@ av
 # actual — ver o comentário em src/evaluation/__init__.py sobre o shim do
 # VertexAI necessário para a importar.
 ragas==0.3.0
+matplotlib
 langchain-ollama
 langchain-google-vertexai

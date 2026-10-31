@@ -1,6 +1,6 @@
 ,média
-faithfulness,0.361
-answer_relevancy,0.532
-llm_context_precision_with_reference,0.744
-context_recall,0.717
-factual_correctness(mode=f1),0.456
+faithfulness,0.396
+answer_relevancy,0.479
+llm_context_precision_with_reference,0.53
+context_recall,0.654
+factual_correctness(mode=f1),0.359
