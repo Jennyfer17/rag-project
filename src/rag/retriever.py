@@ -10,9 +10,11 @@ Classes:
 from abc import ABC, abstractmethod
 
 import chromadb
+import numpy as np
 from sentence_transformers import SentenceTransformer
 from sqlalchemy import create_engine, text
 
+from .bm25 import BM25Index, reciprocal_rank_fusion
 from .config import RetrieverConfig
 from .models import RetrievedDocument, SoilProperty
 
@@ -27,8 +29,14 @@ class BaseRetriever(ABC):
 
 class VectorRetriever(BaseRetriever):
     """
-    Recupera chunks de documentos agrícolas da base vectorial ChromaDB
-    usando similaridade semântica via sentence-transformers.
+    Recupera chunks dos manuais agrícolas por pesquisa híbrida: similaridade
+    semântica (embeddings guardados no ChromaDB) e BM25, fundidas por RRF.
+
+    A colecção é pequena, por isso os embeddings e o índice BM25 são mantidos
+    em memória e a comparação é exacta. Os chunks com similaridade abaixo de
+    `min_relevance` são descartados, e os primeiros resultados podem incluir o
+    chunk seguinte do mesmo manual: as secções costumam ter os sintomas num
+    chunk e o tratamento no seguinte.
     """
 
     def __init__(self, config: RetrieverConfig) -> None:
@@ -40,31 +48,62 @@ class VectorRetriever(BaseRetriever):
         self._client = chromadb.PersistentClient(path=str(config.chroma_path))
         self._collection = self._client.get_collection(config.collection_name)
 
-    def retrieve(self, query: str) -> list[RetrievedDocument]:
-        query_embedding = self._embedding_model.encode(query).tolist()
-
-        results = self._collection.query(
-            query_embeddings=[query_embedding],
-            n_results=self._config.n_results,
-            include=["documents", "metadatas", "distances"],
+        stored = self._collection.get(include=["documents", "metadatas", "embeddings"])
+        self._documents: list[str] = stored["documents"]
+        self._metadatas: list[dict] = stored["metadatas"]
+        embeddings = np.asarray(stored["embeddings"], dtype=np.float32).reshape(
+            len(self._documents), -1
         )
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        self._embeddings = embeddings / np.clip(norms, 1e-12, None)
+        self._bm25 = BM25Index(self._documents)
+        self._positions = {
+            (meta.get("source"), meta.get("chunk_index")): position
+            for position, meta in enumerate(self._metadatas)
+        }
 
+    def retrieve(self, query: str) -> list[RetrievedDocument]:
+        query_embedding = self._embedding_model.encode(query, normalize_embeddings=True)
+        similarities = self._embeddings @ np.asarray(query_embedding, dtype=np.float32)
+
+        limit = self._config.candidates
+        dense_ranking = np.argsort(-similarities)[:limit].tolist()
+        lexical_ranking = self._bm25.rank(query, limit)
+        fused = reciprocal_rank_fusion(dense_ranking, lexical_ranking)
+
+        protected = set(lexical_ranking[: self._config.lexical_protected])
+        selected = [
+            position
+            for position in fused
+            if similarities[position] >= self._config.min_relevance or position in protected
+        ][: self._config.n_results]
+
+        return self._build_documents(selected, similarities)
+
+    def _build_documents(
+        self, selected: list[int], similarities: np.ndarray
+    ) -> list[RetrievedDocument]:
+        """Monta os documentos, juntando o chunk seguinte aos primeiros resultados."""
+        used = set(selected)
         documents: list[RetrievedDocument] = []
-        for doc, meta, dist in zip(
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0],
-        ):
-            similarity = 1.0 - (dist / 2.0)
+        for rank, position in enumerate(selected):
+            meta = self._metadatas[position]
+            content = self._documents[position]
+            if rank < self._config.expand_top:
+                neighbour = self._positions.get(
+                    (meta.get("source"), (meta.get("chunk_index") or 0) + 1)
+                )
+                if neighbour is not None and neighbour not in used:
+                    used.add(neighbour)
+                    content = f"{content} {self._documents[neighbour]}"
             documents.append(
                 RetrievedDocument(
-                    content=doc,
+                    content=content,
                     source=meta.get("source", "desconhecido"),
-                    relevance_score=similarity,
+                    relevance_score=float(similarities[position]),
                     metadata=meta,
                 )
             )
-
         return documents
 
     @property

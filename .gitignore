@@ -1,3 +1,4 @@
 # Ficheiros gerados pelo módulo de Síntese de Voz
 data/tts_voices/
 data/tts_replies/
+.env

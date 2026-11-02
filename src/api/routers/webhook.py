@@ -21,7 +21,7 @@ import hashlib
 import hmac
 import logging
 import os
-from xml.etree.ElementTree import Element, tostring
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 import requests
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, Header, HTTPException, Request, status
@@ -29,7 +29,7 @@ from fastapi.responses import Response
 
 from api.dependencies import get_image_describer, get_pipeline, get_synthesizer, get_transcriber
 from api.routers.media import save_reply_audio
-from image_description import ImageDescriber
+from image_description import ImageDescriber, find_in_description
 from rag import RAGPipeline
 from text_to_speech import TextToSpeech
 from transcription import AudioTranscriber
@@ -64,6 +64,13 @@ def _empty_twiml() -> str:
     return tostring(Element("Response"), encoding="unicode")
 
 
+def _processing_twiml() -> str:
+    """TwiML que confirma logo ao agricultor que a mensagem está a ser tratada."""
+    response = Element("Response")
+    SubElement(response, "Message").text = _PROCESSING_MESSAGE
+    return tostring(response, encoding="unicode")
+
+
 def _truncate(text: str) -> str:
     if len(text) <= _WHATSAPP_MAX_LENGTH:
         return text
@@ -90,15 +97,38 @@ def _download_media(url: str) -> bytes:
     return response.content
 
 
+def _question_from_image(body: str, description: str) -> tuple[str, str | None]:
+    """
+    Monta a pergunta a partir da legenda e da descrição da imagem.
+
+    Se a descrição mencionar culturas ou partes de plantas, o LLM recebe os
+    termos em português, em vez do texto em inglês do modelo de visão: misturar
+    as duas línguas levava-o a confundir culturas e a inventar produtos.
+    """
+    findings = find_in_description(description)
+    if not findings.is_agricultural:
+        if body:
+            return f"{body}\n\n[Imagem enviada pelo utilizador: {description}]", None
+        return description, None
+
+    # Uma foto descrita em poucas palavras não permite um diagnóstico seguro.
+    seen = f"Na foto vê-se: {findings.seen()}. Diz o que pode ser, sem certezas."
+    retrieval_query = findings.search_query()
+    if body:
+        return f"{body}\n\n[{seen}]", retrieval_query
+    return f"Enviei uma foto da minha planta. {seen} O que devo fazer?", retrieval_query
+
+
 def _resolve_question(
     body: str,
     media_url: str | None,
     media_content_type: str | None,
     transcriber: AudioTranscriber,
     image_describer: ImageDescriber,
-) -> str:
+) -> tuple[str, str | None]:
     """
-    Resolve o texto da pergunta do utilizador.
+    Resolve o texto da pergunta do utilizador e, nas imagens, o texto a usar
+    na pesquisa dos manuais (termos em português extraídos da descrição).
 
     Se a mensagem tiver um anexo de imagem (ex: foto de uma planta ou praga),
     descarrega-a e obtém uma descrição textual (módulo de Descrição de
@@ -112,19 +142,16 @@ def _resolve_question(
 
     if media_url and content_type.startswith("image"):
         image_bytes = _download_media(media_url)
-        description = image_describer.describe(image_bytes)
-        if body:
-            return f"{body}\n\n[Imagem enviada pelo utilizador: {description}]"
-        return description
+        return _question_from_image(body, image_describer.describe(image_bytes))
 
     if body:
-        return body
+        return body, None
 
     if media_url and content_type.startswith("audio"):
         audio_bytes = _download_media(media_url)
-        return transcriber.transcribe(audio_bytes)
+        return transcriber.transcribe(audio_bytes), None
 
-    return ""
+    return "", None
 
 
 def _send_whatsapp_reply(to: str, from_: str, body: str, media_url: str | None = None) -> None:
@@ -167,7 +194,9 @@ def _process_and_reply(
 ) -> None:
     """Corre em background: resolve a pergunta (texto, áudio ou imagem), chama o RAG e responde via Twilio REST."""
     try:
-        question = _resolve_question(body, media_url, media_content_type, transcriber, image_describer)
+        question, retrieval_query = _resolve_question(
+            body, media_url, media_content_type, transcriber, image_describer
+        )
         if not question:
             logger.warning("Não foi possível obter texto da mensagem de %s", to)
             answer = _FALLBACK_MESSAGE
@@ -175,7 +204,9 @@ def _process_and_reply(
             # `to` é o número WhatsApp do utilizador (destino da resposta),
             # usado como session_id para manter o contexto da conversa entre
             # perguntas de seguimento.
-            rag_response = pipeline.query(question=question, session_id=to)
+            rag_response = pipeline.query(
+                question=question, session_id=to, retrieval_query=retrieval_query
+            )
             answer = _truncate(rag_response.answer)
             logger.info("Resposta RAG gerada para %s (~%d palavras)", to, len(answer.split()))
     except Exception as exc:
@@ -271,5 +302,6 @@ async def whatsapp_webhook(
         is_audio_message,
     )
 
-    # Responde imediatamente ao Twilio para evitar timeout
-    return Response(content=_empty_twiml(), media_type="application/xml")
+    # Responde imediatamente ao Twilio para evitar timeout, e avisa o
+    # agricultor de que a resposta vem a caminho.
+    return Response(content=_processing_twiml(), media_type="application/xml")

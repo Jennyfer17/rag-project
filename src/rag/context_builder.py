@@ -18,8 +18,6 @@ class ContextBuilder:
       2. Conhecimento Agrícola — chunks de manuais recuperados por similaridade
     """
 
-    _MIN_RELEVANCE_SCORE = 0.3
-
     def build(
         self,
         vector_docs: list[RetrievedDocument],
@@ -27,21 +25,14 @@ class ContextBuilder:
     ) -> str:
         """
         Constrói a string de contexto a partir dos documentos e dados de solo.
-
-        Documentos com relevância abaixo de _MIN_RELEVANCE_SCORE são filtrados
-        para evitar ruído no contexto.
         """
         parts: list[str] = []
 
         if soil_properties:
             parts.append(self._format_soil_section(soil_properties))
 
-        filtered_docs = [
-            doc for doc in vector_docs
-            if doc.relevance_score >= self._MIN_RELEVANCE_SCORE
-        ]
-        if filtered_docs:
-            parts.append(self._format_documents_section(filtered_docs))
+        if vector_docs:
+            parts.append(self._format_documents_section(vector_docs))
 
         if not parts:
             return "Não foi encontrado contexto relevante para esta pergunta."
@@ -69,8 +60,9 @@ class ContextBuilder:
         lines = ["=== CONHECIMENTO AGRÍCOLA RELEVANTE ==="]
 
         for i, doc in enumerate(docs, start=1):
-            relevance_pct = round(doc.relevance_score * 100, 1)
-            lines.append(f"\n[Documento {i} | Fonte: {doc.source} | Relevância: {relevance_pct}%]")
+            # Sem nome da fonte nem pontuação: gastam tokens e o modelo
+            # copiava-os para as respostas dadas ao agricultor.
+            lines.append(f"\n[Trecho {i}]")
             lines.append(doc.content.strip())
 
         return "\n".join(lines)

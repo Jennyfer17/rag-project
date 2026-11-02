@@ -19,17 +19,22 @@ dependência de dados um do outro) e correm em paralelo numa thread pool
 quando ambos são necessários, para reduzir a latência total da consulta.
 """
 
+import logging
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 
+from .answer_cache import AnswerCache
 from .config import RAGConfig
 from .context_builder import ContextBuilder
 from .conversation import ConversationMemory
 from .domain_guard import OUT_OF_DOMAIN_MESSAGE, DomainGuard
 from .generator import LLaMAGenerator
 from .models import RAGResponse
-from .query_reformulator import QueryReformulator
+from .query_reformulator import QueryReformulator, looks_self_contained
 from .query_router import SoilQueryRouter
 from .retriever import SoilRetriever, VectorRetriever
+
+logger = logging.getLogger(__name__)
 
 
 class RAGPipeline:
@@ -55,7 +60,14 @@ class RAGPipeline:
         self._query_router = SoilQueryRouter()
         self._query_reformulator = QueryReformulator(self._config.model)
         self._domain_guard = DomainGuard(self._config.model)
-        self._conversation_memory = ConversationMemory(self._config.conversation.max_turns)
+        self._conversation_memory = ConversationMemory(
+            self._config.conversation.max_turns,
+            self._config.conversation.max_answer_chars,
+        )
+        self._answer_cache = AnswerCache(
+            self._config.answer_cache.max_size,
+            self._config.answer_cache.ttl_seconds,
+        )
         self._retrieval_executor = ThreadPoolExecutor(
             max_workers=2, thread_name_prefix="rag-retrieval"
         )
@@ -69,6 +81,7 @@ class RAGPipeline:
         question: str,
         include_soil: bool | None = None,
         session_id: str | None = None,
+        retrieval_query: str | None = None,
     ) -> RAGResponse:
         """
         Processa uma pergunta e retorna a resposta aumentada pelo contexto.
@@ -85,6 +98,9 @@ class RAGPipeline:
                            recuperação, e esta troca é adicionada ao
                            histórico da sessão. Se None, a pergunta é
                            tratada de forma independente, sem memória.
+            retrieval_query : texto a usar na recuperação em vez da pergunta (ex:
+                           termos em português extraídos da descrição de uma
+                           imagem). Se None, é derivado da pergunta.
 
         Retorna:
             RAGResponse com a resposta, documentos recuperados e dados de solo.
@@ -93,11 +109,23 @@ class RAGPipeline:
             self._conversation_memory.get_history(session_id) if session_id else []
         )
 
+        # Uma resposta guardada só serve se a pergunta não depender da conversa.
+        cacheable = retrieval_query is None and (not history or looks_self_contained(question))
+        requested_soil = include_soil
+        if cacheable:
+            cached = self._answer_cache.get(question, requested_soil)
+            if cached is not None:
+                logger.info("Resposta servida da cache.")
+                if session_id:
+                    self._conversation_memory.add_turn(session_id, question, cached.answer)
+                return replace(cached, question=question)
+
         # Perguntas de seguimento (ex: "e para o feijão?") não contêm contexto
         # suficiente por si só — reformula-se como pergunta autónoma antes de
         # a usar para recuperação e classificação. A pergunta original é
         # mantida para a geração da resposta e para o histórico da conversa.
-        retrieval_query = self._query_reformulator.reformulate(question, history)
+        if retrieval_query is None:
+            retrieval_query = self._query_reformulator.reformulate(question, history)
 
         if not self._domain_guard.is_in_domain(retrieval_query):
             answer = OUT_OF_DOMAIN_MESSAGE
@@ -139,13 +167,24 @@ class RAGPipeline:
         if session_id:
             self._conversation_memory.add_turn(session_id, question, answer)
 
-        return RAGResponse(
+        response = RAGResponse(
             question=question,
             answer=answer,
             retrieved_documents=vector_docs,
             soil_context=soil_properties,
             model_name=self._generator.model_name,
         )
+        # Só guarda respostas geradas sem histórico, que valem para qualquer sessão.
+        if cacheable and not history:
+            self._answer_cache.put(question, requested_soil, response)
+        return response
+
+    def warm_up(self) -> None:
+        """Carrega o LLM em memória; uma falha aqui não impede o arranque."""
+        try:
+            self._generator.warm_up()
+        except Exception as exc:
+            logger.warning("Não foi possível pré-carregar o modelo: %s", exc)
 
     def health_check(self) -> dict:
         """

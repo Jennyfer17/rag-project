@@ -16,7 +16,7 @@ import logging
 import ollama
 
 from .config import ModelConfig
-from .text_utils import normalize_text
+from .text_utils import compile_keywords, normalize_text
 
 logger = logging.getLogger(__name__)
 
@@ -49,21 +49,27 @@ _IN_DOMAIN_KEYWORDS: tuple[str, ...] = (
     # culturas
     "milho", "feijao", "mandioca", "amendoim", "banana", "cogumelo",
     "inhame", "alface", "arroz", "tomate", "batata", "hortalica", "sorgo",
-    "girassol", "matiti",
+    "girassol", "matiti", "couve", "repolho", "cebola", "alho", "cenoura", "pepino",
+    "abobora", "pimento", "beringela", "feijoes", "mapira", "mexoeira",
     # práticas agrícolas
     "agricultura", "agricola", "agronomo", "machamba", "cultura", "cultivo",
     "cultivar", "plantar", "plantacao", "sementeira", "semente", "sacha",
     "amontoa", "rega", "regar", "irrigacao", "colheita", "colher", "poda",
-    "rotacao de culturas", "consorciacao",
+    "rotacao de culturas", "consorciacao", "planta", "plantinha", "folha", "viveiro",
+    "canteiro", "transplante", "transplantar", "transplantei", "plantei", "semear",
+    "semeio", "semeei", "horta", "cobertura morta", "capim", "biopesticida",
     # pragas e doenças das plantas
     "praga", "pragas", "lagarta", "gafanhoto", "fungicida", "pesticida",
-    "herbicida", "inseticida", "doenca da planta", "doenca das plantas",
+    "herbicida", "inseticida", "insecticida", "insecto", "inseto", "afideo", "traca",
+    "pulgao", "pulgoes", "margosa", "doenca da planta", "doenca das plantas",
     "doenca da cultura",
     # solo e nutrição (alinhado com SoilQueryRouter)
     "solo", "solos", "terra", "terreno", "adubo", "adubacao", "fertilizante",
     "fertilizacao", "fertilidade", "nutriente", "nutrientes", "azoto",
     "fosforo", "potassio", "materia organica", "composto", "estrume",
 )
+
+_IN_DOMAIN_PATTERN = compile_keywords(_IN_DOMAIN_KEYWORDS)
 
 _OUT_OF_DOMAIN_KEYWORDS: tuple[str, ...] = (
     "politica", "eleicoes", "presidente da republica", "futebol", "desporto",
@@ -72,6 +78,7 @@ _OUT_OF_DOMAIN_KEYWORDS: tuple[str, ...] = (
     "bolsa de valores", "namoro", "receita de bolo", "medicamento",
     "hospital", "covid",
 )
+_OUT_OF_DOMAIN_PATTERN = compile_keywords(_OUT_OF_DOMAIN_KEYWORDS)
 
 
 class DomainGuard:
@@ -93,9 +100,9 @@ class DomainGuard:
         """
         normalized = normalize_text(question)
 
-        if any(keyword in normalized for keyword in _IN_DOMAIN_KEYWORDS):
+        if _IN_DOMAIN_PATTERN.search(normalized):
             return True
-        if any(keyword in normalized for keyword in _OUT_OF_DOMAIN_KEYWORDS):
+        if _OUT_OF_DOMAIN_PATTERN.search(normalized):
             return False
 
         return self._classify_with_llm(question)
@@ -113,7 +120,8 @@ class DomainGuard:
                     {"role": "system", "content": _DOMAIN_CHECK_PROMPT},
                     {"role": "user", "content": f"Pergunta: {question}"},
                 ],
-                options={"temperature": 0.0, "num_predict": 5},
+                options={"temperature": 0.0, "num_predict": 5, "num_ctx": self._config.num_ctx},
+                keep_alive=self._config.keep_alive,
             )
         except Exception as exc:
             logger.warning(

@@ -24,7 +24,8 @@ from fastapi.responses import JSONResponse
 # Garante que src/ está no path (necessário ao correr com uvicorn a partir da raiz)
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from api.dependencies import get_pipeline
+from api.dependencies import get_image_describer, get_pipeline, get_synthesizer, get_transcriber
+from api.power import allow_system_sleep, prevent_system_sleep, warn_if_on_battery
 from api.routers import chat, health, media, webhook
 
 logging.basicConfig(
@@ -40,15 +41,34 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Inicializa o RAGPipeline uma única vez no arranque do servidor."""
+    """Prepara o servidor e carrega os modelos uma única vez no arranque."""
+    prevent_system_sleep()
+    warn_if_on_battery()
+
     logger.info("A inicializar o RAGPipeline...")
     try:
         pipeline = get_pipeline()
         health_status = pipeline.health_check()
         logger.info("RAGPipeline pronto: %s", health_status)
+        pipeline.warm_up()
     except Exception as exc:
         logger.error("Falha ao inicializar o RAGPipeline: %s", exc)
+
+    # Carregados aqui para a primeira mensagem de áudio ou imagem não pagar
+    # esse custo. Uma falha não impede o servidor de responder a texto.
+    for name, load in (
+        ("transcrição", get_transcriber),
+        ("descrição de imagens", get_image_describer),
+        ("síntese de voz", get_synthesizer),
+    ):
+        try:
+            load()
+            logger.info("Módulo de %s pronto.", name)
+        except Exception as exc:
+            logger.error("Falha ao carregar o módulo de %s: %s", name, exc)
+
     yield
+    allow_system_sleep()
     logger.info("Servidor a encerrar.")
 
 

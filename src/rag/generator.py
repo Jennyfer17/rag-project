@@ -5,10 +5,18 @@ O LLaMAGenerator encapsula toda a comunicação com o servidor Ollama,
 expondo os hiperparâmetros definidos em ModelConfig.
 """
 
+import re
+
 import ollama
 from ollama import ResponseError
 
 from .config import ModelConfig
+
+
+def _trim_to_last_sentence(text: str) -> str:
+    """Remove a frase incompleta de uma resposta cortada pelo limite de tokens."""
+    matches = list(re.finditer(r"[.!?:](?=\s|$)", text))
+    return text[: matches[-1].end()].strip() if matches else text.strip()
 
 
 class LLaMAGenerator:
@@ -32,7 +40,12 @@ class LLaMAGenerator:
             "top_k": config.top_k,
             "num_predict": config.max_tokens,
             "repeat_penalty": config.repeat_penalty,
+            "num_ctx": config.num_ctx,
         }
+
+    def warm_up(self) -> None:
+        """Carrega o modelo em memória, para a primeira resposta não pagar esse custo."""
+        self._client.generate(model=self._config.model_name, keep_alive=self._config.keep_alive)
 
     def generate(
         self,
@@ -68,6 +81,7 @@ class LLaMAGenerator:
                 model=self._config.model_name,
                 messages=messages,
                 options=self._options,
+                keep_alive=self._config.keep_alive,
             )
         except ResponseError as exc:
             raise RuntimeError(
@@ -75,7 +89,10 @@ class LLaMAGenerator:
                 f"em {self._config.ollama_base_url}: {exc}"
             ) from exc
 
-        return response.message.content
+        answer = response.message.content
+        if response.done_reason == "length":
+            answer = _trim_to_last_sentence(answer)
+        return answer
 
     @property
     def model_name(self) -> str:

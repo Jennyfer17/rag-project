@@ -306,7 +306,7 @@ class TestConcorrencia:
         elapsed = time.perf_counter() - start
 
         assert response.status_code == 200
-        assert response.text == "<Response />"
+        assert "A processar" in response.text
         assert elapsed < 15
 
 

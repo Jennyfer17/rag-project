@@ -3,9 +3,10 @@ Avaliador do sistema RAG usando RAGAS.
 
 Corre o RAGPipeline sobre um conjunto de perguntas de referência, recolhe a
 resposta e os documentos recuperados para cada uma, e calcula métricas RAGAS
-— usando o próprio LLaMA (via Ollama) como "juiz" e o mesmo modelo de
+— usando um modelo fixo (via Ollama) como "juiz" e o mesmo modelo de
 embeddings do VectorRetriever, para manter a avaliação totalmente local
-(sem chaves de API externas).
+(sem chaves de API externas). O juiz não depende do modelo do pipeline: se
+este mudar, as notas continuam comparáveis.
 
 Métricas calculadas:
   - Faithfulness                      : a resposta é fundamentada apenas no contexto recuperado?
@@ -39,17 +40,19 @@ from .dataset import GoldenExample
 
 logger = logging.getLogger(__name__)
 
+JUDGE_MODEL = "llama3.1:8b"
+
 
 class RAGEvaluator:
     """Avalia o RAGPipeline com RAGAS, usando Ollama e embeddings locais como juízes."""
 
-    def __init__(self, pipeline: RAGPipeline) -> None:
+    def __init__(self, pipeline: RAGPipeline, judge_model: str = JUDGE_MODEL) -> None:
         self._pipeline = pipeline
 
         model_config = pipeline.config.model
         judge_llm = LangchainLLMWrapper(
             ChatOllama(
-                model=model_config.model_name,
+                model=judge_model,
                 base_url=model_config.ollama_base_url,
                 temperature=0.0,
             )

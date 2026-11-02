@@ -7,7 +7,7 @@ deve ser incluído na resposta, evitando consultas desnecessárias à BD
 quando a pergunta não tem relação com propriedades do solo.
 """
 
-from .text_utils import normalize_text
+from .text_utils import compile_keywords, normalize_text
 
 
 class SoilQueryRouter:
@@ -21,23 +21,25 @@ class SoilQueryRouter:
     quer incluir os dados do solo.
     """
 
+    # Palavras genéricas como "terra", "terreno" ou "composto" ficam de fora:
+    # surgem em muitas perguntas que não dependem da análise do solo, e cada
+    # activação acrescenta 18 propriedades ao prompt.
     _DEFAULT_KEYWORDS: tuple[str, ...] = (
-        "solo", "solos", "terra", "terreno",
+        "meu solo", "nosso solo", "este solo", "tipo de solo", "tipo de terra",
+        "minha terra", "qualidade do solo", "qualidade da terra", "solo da associacao",
         "ph", "acidez", "acido", "alcalino", "calagem",
         "adubo", "adubacao", "adubar", "fertilizante", "fertilizacao", "fertilidade",
-        "nutriente", "nutrientes", "carencia", "deficiencia",
+        "nutriente", "carencia", "deficiencia",
         "azoto", "nitrogenio", "fosforo", "potassio", "calcio", "magnesio",
         "ferro", "zinco", "enxofre", "aluminio",
-        "materia organica", "carbono organico", "composto", "estrume",
+        "materia organica", "carbono organico",
         "textura", "argila", "areia", "silte", "pedregosidade",
         "densidade aparente", "capacidade de troca cationica", "ctc",
         "analise do solo", "analise de solo", "propriedades do solo",
     )
 
     def __init__(self, keywords: tuple[str, ...] | None = None) -> None:
-        self._keywords = tuple(
-            normalize_text(kw) for kw in (keywords or self._DEFAULT_KEYWORDS)
-        )
+        self._pattern = compile_keywords(keywords or self._DEFAULT_KEYWORDS)
 
     def should_use_soil_data(self, question: str) -> bool:
         """
@@ -45,5 +47,4 @@ class SoilQueryRouter:
         com o solo, indicando que os dados edafológicos devem ser incluídos
         no contexto da resposta.
         """
-        normalized_question = normalize_text(question)
-        return any(keyword in normalized_question for keyword in self._keywords)
+        return self._pattern.search(normalize_text(question)) is not None

@@ -15,10 +15,13 @@ class ConversationMemory:
     Cada sessão (ex: número de telefone no WhatsApp, ou um session_id
     fornecido pelo cliente da API) mantém uma janela deslizante das últimas
     `max_turns` trocas — as mais antigas são descartadas automaticamente.
+    As respostas são guardadas até `max_answer_chars` caracteres: chega para
+    entender perguntas de seguimento, sem encher o prompt das seguintes.
     """
 
-    def __init__(self, max_turns: int = 5) -> None:
+    def __init__(self, max_turns: int = 2, max_answer_chars: int = 400) -> None:
         self._max_turns = max_turns
+        self._max_answer_chars = max_answer_chars
         self._sessions: dict[str, deque[dict]] = {}
         self._lock = threading.Lock()
 
@@ -34,7 +37,7 @@ class ConversationMemory:
                 session_id, deque(maxlen=self._max_turns * 2)
             )
             history.append({"role": "user", "content": question})
-            history.append({"role": "assistant", "content": answer})
+            history.append({"role": "assistant", "content": answer[: self._max_answer_chars]})
 
     def clear(self, session_id: str) -> None:
         """Remove o histórico de uma sessão."""

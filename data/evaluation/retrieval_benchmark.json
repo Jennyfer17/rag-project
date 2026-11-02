@@ -1,0 +1,152 @@
+[
+  {
+    "question": "Quero fazer o viveiro da couve, mas o terreno aqui fica encharcado quando chove muito. Como devo fazer os canteiros?",
+    "ground_truth": "Em terrenos que acumulam muita água, faça canteiros elevados. Não devem ter mais de 1,2 m de largura nem mais de cerca de 10 m de comprimento. Semeie em linhas atravessadas ao comprimento, com pelo menos 10 cm entre linhas. Regue quando a terra esfregada na mão cair como pó. Na última semana de viveiro, regue menos.",
+    "evidence": ["devem ser construidos canteiros elevados", "largura nao deve exceder", "distanciadas em pelo menos 10 cm", "cair como poeira", "frequencia de rega deve diminuir"]
+  },
+  {
+    "question": "As sementes de couve e alface que compramos aos vendedores que passam por aqui muitas vezes não prestam. Como posso produzir e guardar as minhas próprias sementes?",
+    "ground_truth": "Escolha as plantas mais bonitas e saudáveis e deixe-as florescer até darem semente. Recolha e seque as sementes num lugar sem humidade. Guarde-as bem secas num recipiente limpo e fechado, num lugar fresco e ventilado. Pode juntar cinza ou casca seca de citrinos. Escreva o nome da planta, a variedade e a data. Reserve 5 a 10% da produção para semente.",
+    "evidence": ["deixar florecer ate producao de sementes", "num recipiente limpo", "devem estar bem secas", "casca seca de citrinos", "embalagem deve ter o nome da planta", "pelo menos 5 a 10"]
+  },
+  {
+    "question": "A minha couve tem umas lagartas verdes pequenas, mais ou menos de 1 cm, espalhadas pelas folhas, e estão a comer as folhas todas. O que devo fazer?",
+    "ground_truth": "Parece ser a traça da couve. Aplique margosa: 20 a 50 g de pó de sementes por litro de água, ou 100 g de pó de folhas por litro, com sabão líquido. Faça rotação e consociação, queime ou enterre os restos depois da colheita, e só use insecticida se houver mais de uma larva por planta.",
+    "evidence": ["lagarta de cor verde e de tamanho pequeno", "fazer a rotacao de culturas e consociacao usando o pimento piri piri", "sementes 20 50g litro", "queimar ou enterrar bem os restolhos", "superior a uma larva por planta"]
+  },
+  {
+    "question": "Uso medicamentos contra as pragas da couve, mas parece que já não fazem efeito e estou a gastar muito dinheiro. O que devo fazer?",
+    "ground_truth": "Identifique bem a praga e use os produtos recomendados para ela, na dose do rótulo e com equipamento de protecção. Junte prevenção: observar as plantas, rotação com culturas de outra família, consociação com cebola ou alho, destruir restos da cultura e usar biopesticidas como a margosa, pulverizando de baixo para cima.",
+    "evidence": ["identificar a praga doenca ou infestante", "usar doses recomendadas", "pesticidas recomendados para as pragas da couve", "culturas que nao sao da familia das brassicas", "pulverizar as plantas de baixo para cima"]
+  },
+  {
+    "question": "Transplantei a alface há uma semana, mas muitas plantinhas murcharam e não pegaram. O que pode ter acontecido e o que faço agora?",
+    "ground_truth": "As causas comuns são plantinhas com mais de 6 folhas, raízes sem terra, plantas feridas ou pouca rega. Substitua as mortas entre 7 e 10 dias depois do transplante e regue todos os dias. Nos próximos transplantes, use plantinhas com 4 a 5 folhas, regue algumas horas antes e transplante de manhã cedo ou ao fim da tarde.",
+    "evidence": ["plantinhas com muitas folhas", "raizes transplantadas nuas", "intervalo de 7 a 10 dias", "regados algumas horas antes", "de manha cedo ou ao fim da tarde", "4 a 5 folhas"]
+  },
+  {
+    "question": "Quero melhorar a terra da minha machamba com composto antes de plantar. Como faço o composto?",
+    "ground_truth": "Misture restos de plantas com estrume num monte em lugar seco e arejado. Verifique a humidade apertando o material na mão e a temperatura com uma barra de ferro. Revire aos 15, 30, 45 e 60 dias e deixe descansar 30 dias. Fica pronto em cerca de 90 dias. Use 1 a 3 kg por metro quadrado de canteiro.",
+    "evidence": ["revirar aos 15 30 45 e 60", "torno de 90 dias", "1 a 3 kg m 2", "barra de ferro", "matéria prima para a preparação do composto"]
+  },
+  {
+    "question": "Costumo pôr capim à volta das plantas para guardar a humidade da terra. Como devo fazer para não prejudicar as culturas?",
+    "ground_truth": "A cobertura morta poupa água e reduz a monda. Não use uma camada muito grossa, porque em solo húmido pode apodrecer as raízes e atrair insectos, doenças e ratos. Não deixe o capim tocar nos pés das plantas e evite capim fresco, que pode afectar o pH do solo.",
+    "evidence": ["nao deve tocar os pes das plantas", "nao colocar cobertura morta de grande espessura", "capim fresco", "poupar a agua"]
+  },
+  {
+    "question": "As folhas da minha couve estão com manchas amarelas e castanhas nas bordas, em forma de V. O que é e como trato?",
+    "ground_truth": "Parece ser a podridão negra, causada por uma bactéria. Elimine os restos das plantas doentes e aplique um produto à base de cobre. Nas próximas sementeiras, use sementes certificadas e variedades resistentes e faça rotação de pelo menos 2 anos com batata ou cebola.",
+    "evidence": ["em forma de v na margem das folhas", "sementes certificadas", "pesticidas a base de cobre", "pelo menos 2 anos", "oxicloreto de cobre"]
+  },
+  {
+    "question": "A minha couve tem bichinhos verdes muito pequenos em grupo que chupam a planta e as folhas ficam tortas. Como controlo?",
+    "ground_truth": "São afídeos. Observe as folhas e arranque as mais velhas e infestadas, proteja as joaninhas e sirfídeos, faça rotação e consociação com cebola e alho e aplique solução de sabão líquido.",
+    "evidence": ["sao insectos pequenos", "joaninhas e sirfideos", "solucao de sabao liquido"]
+  },
+  {
+    "question": "De manhã encontro as plantinhas de couve cortadas junto ao chão. Dizem que é uma lagarta que sai à noite. O que faço?",
+    "ground_truth": "É a rosca. Pode inundar o solo para as lagartas saírem dos esconderijos, aplicar insecticida granulado à volta da base do caule ou espalhar farelo misturado com insecticida.",
+    "evidence": ["cortando as plantinhas na base", "inundar o solo", "farelo misturado com insecticida"]
+  },
+  {
+    "question": "As raízes da minha couve ficaram grossas e curtas, com caroços, e a planta murcha nas horas de calor. Que doença é?",
+    "ground_truth": "É a hérnia das crucíferas, causada por um fungo do solo. Use plântulas sãs, faça rotação com culturas de outra família, remova as plantas infestadas e faça calagem do solo.",
+    "evidence": ["chamadas galhas", "calagem dos solos"]
+  },
+  {
+    "question": "O meu repolho está a apodrecer depressa e sai um líquido que cheira mal. Como evito isto?",
+    "ground_truth": "É a podridão mole, causada por uma bactéria. Evite ferir as plantas, faça rotação com gramíneas, evite falta de cálcio, boro e molibdénio e use variedades resistentes.",
+    "evidence": ["liquido com mau cheiro", "evitar ferimentos das plantas"]
+  },
+  {
+    "question": "Há uma larva clara com cabeça preta dentro do caule da couve e a ponta da planta morreu. Como combato?",
+    "ground_truth": "É a broca da couve. Faça monitoria, use plântulas sãs, destrua as plantas atacadas e os restos da cultura e aplique margosa. Use insecticidas só quando a infestação for grande.",
+    "evidence": ["larva com a cor creme", "usar plantulas sas"]
+  },
+  {
+    "question": "Lagartas escuras vivem juntas no repolho e deixam teias e sujidade nas folhas. Como trato?",
+    "ground_truth": "É a lagarta gregária da couve. Faça monitoria semanal 40 dias após o transplante, destrua os restos da cultura, faça rotação e consociação e aplique margosa. Use insecticidas se a infestação for grave.",
+    "evidence": ["cobertas por teias", "monitoria do campo uma vez por semana"]
+  },
+  {
+    "question": "As folhas mais velhas da minha couve estão a ficar amarelas e a planta não cresce. Pode ser falta de adubo?",
+    "ground_truth": "Pode ser falta de nutrientes. O amarelecimento das folhas com menor crescimento aponta para deficiência de nitrogénio; folhas roxas apontam para fósforo e margens castanhas para potássio.",
+    "evidence": ["deficiencia de nitrogenio"]
+  },
+  {
+    "question": "Encontrei lagartas dentro do funil do meu milho. Quando devo pulverizar?",
+    "ground_truth": "Pulverize logo depois dos primeiros sintomas, porque as lagartas pequenas ficam expostas nas folhas e as maiores ficam protegidas dentro do funil. Com armadilha, inicie o tratamento se observar pelo menos 1 adulto.",
+    "evidence": ["logo apos a observacao dos primeiros sintomas", "pelo menos 1 adulto"]
+  },
+  {
+    "question": "Como posso reduzir a lagarta invasora do milho sem usar químicos?",
+    "ground_truth": "Semeie cedo, de Outubro até Dezembro, destrua os restolhos depois da colheita e use armadilhas de feromonas para acompanhar a praga.",
+    "evidence": ["semear cedo", "destruir os restolhos"]
+  },
+  {
+    "question": "Em que altura do ano é melhor produzir cebola?",
+    "ground_truth": "O período ideal é a época fresca, de Março a Agosto, com temperatura de cerca de 15 a 21 graus.",
+    "evidence": ["de marco a agosto"]
+  },
+  {
+    "question": "Quanto tempo depois de semear posso passar as mudas de cebola para o campo?",
+    "ground_truth": "As mudas são transplantadas 40 a 60 dias depois da sementeira, com 18 a 20 cm de altura.",
+    "evidence": ["40 a 60 dias"]
+  },
+  {
+    "question": "Como sei que a cebola já está pronta para colher?",
+    "ground_truth": "O sinal é o tombamento do falso caule seguido da secura da planta.",
+    "evidence": ["tombamento"]
+  },
+  {
+    "question": "Que adubo devo pôr na cebola depois do transplante?",
+    "ground_truth": "Aos 30 dias depois do transplante aplique sulfato de amónio e sulfato de potássio; aos 60 dias aplique sulfato de potássio.",
+    "evidence": ["adubacao de cobertura", "30 dias depois do transplante"]
+  },
+  {
+    "question": "As folhas da cebola têm manchas brancas que crescem e ficam compridas, cor de creme. O que é e como controlo?",
+    "ground_truth": "É a queima de alternaria, causada por um fungo. Use variedades resistentes, faça rotação e, se a infestação for intensa, pulverize com fungicidas específicos.",
+    "evidence": ["queima de alternaria", "fungicidas especificos"]
+  },
+  {
+    "question": "Uns insectos muito pequeninos estão a sugar as folhas da minha cebola no tempo quente. Que produto uso?",
+    "ground_truth": "São tripes da cebola. Pulverize com insecticida de acção sistémica; Thiametoxan e Lufenuron têm bom efeito.",
+    "evidence": ["tripes da cebola", "thiametoxan"]
+  },
+  {
+    "question": "A que distância devo plantar a alface?",
+    "ground_truth": "Use 20 ou 25 cm para variedades pequenas ou de colheita precoce e 30 ou 35 cm para as variedades maiores.",
+    "evidence": ["20 ou 25 cm"]
+  },
+  {
+    "question": "Que terra é melhor para a alface?",
+    "ground_truth": "De preferência solos areno-argilosos, com boa drenagem, boa fertilidade e matéria orgânica, com pH de 6 a 6,7.",
+    "evidence": ["areno argilosos"]
+  },
+  {
+    "question": "Como preparo um remédio natural com folhas de margosa para as pragas?",
+    "ground_truth": "Use 200 g de folhas de margosa em 16 litros de água com sabão, deixe repousar 24 horas, filtre e pulverize de 15 em 15 dias como prevenção.",
+    "evidence": ["200 gr de folhas de margosa"]
+  },
+  {
+    "question": "Como faço um biopesticida com alho?",
+    "ground_truth": "Use cerca de 270 g de alho triturado em 16 litros de água, conforme o manual, deixe repousar, filtre e pulverize.",
+    "evidence": ["270 gr"]
+  },
+  {
+    "question": "Que plantas posso pôr na horta para afastar os insectos sem usar químicos?",
+    "ground_truth": "Plantas repelentes como alho, hortelã, cravo-de-defunto, erva-doce, coentro, manjericão e citronela afastam pragas e reduzem os tratamentos químicos.",
+    "evidence": ["plantas repelentes", "cravo de defunto"]
+  },
+  {
+    "question": "O vento está a levar a terra da minha machamba. O que posso fazer?",
+    "ground_truth": "Mantenha o solo sempre com plantas e plante árvores e arbustos à volta da machamba para servir de quebra-vento.",
+    "evidence": ["quebra vento"]
+  },
+  {
+    "question": "O que é a amontoa e em que culturas se faz?",
+    "ground_truth": "A amontoa consiste em puxar o solo para junto das plantas e faz-se em culturas como o tomateiro, a batata e a cenoura.",
+    "evidence": ["puxar o solo para junto das plantas"]
+  }
+]

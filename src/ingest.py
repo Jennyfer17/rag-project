@@ -2,18 +2,23 @@
 Pipeline de ingestão de dados para o sistema RAG do Amigo do Agricultor.
 
 Etapas:
-  1. Extrai texto dos PDFs em data/agriculture/ → salva em data/extracted/
-     - Tenta extracção directa com PyMuPDF
+  1. Obtém o texto de cada PDF de data/agriculture/:
+     - Reutiliza o .txt já extraído em notebooks/data/extracted/, se existir
+     - Caso contrário (ou com --reextract), extrai com PyMuPDF
      - Se o PDF for escaneado (sem texto), usa OCR via easyocr
-  2. Divide o texto em chunks com overlap
-  3. Gera embeddings com sentence-transformers (modelo multilingual)
-  4. Armazena na base vectorial ChromaDB em data/chroma_db/
+  2. Limpa o texto e divide-o em chunks que cabem no modelo de embeddings
+  3. Gera embeddings com sentence-transformers (modelo multilingue)
+  4. Armazena na colecção configurada em RetrieverConfig, a mesma que a API lê
+
+Uso (a partir de qualquer pasta):
+    python src/ingest.py
+    python src/ingest.py --reextract
 
 Dependência adicional para OCR:
   pip install easyocr
 """
 
-import re
+import argparse
 import sys
 from pathlib import Path
 
@@ -22,19 +27,21 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 import fitz  # PyMuPDF
 import chromadb
 from sentence_transformers import SentenceTransformer
 
+from rag.chunking import chunk_text, clean_text
+from rag.config import RetrieverConfig
 
-PDF_DIR = Path("data/agriculture")
-TXT_DIR = Path("data/extracted")
-CHROMA_DIR = Path("data/chroma_db")
-COLLECTION_NAME = "agriculture_manuals"
-
-CHUNK_SIZE = 1000       # caracteres por chunk
-CHUNK_OVERLAP = 200     # sobreposição entre chunks
-EMBEDDING_MODEL = "paraphrase-multilingual-mpnet-base-v2"
+_CONFIG = RetrieverConfig()
+PDF_DIR = _CONFIG.pdf_dir
+TXT_DIR = _CONFIG.extracted_text_dir
+CHROMA_DIR = _CONFIG.chroma_path
+COLLECTION_NAME = _CONFIG.collection_name
+EMBEDDING_MODEL = _CONFIG.embedding_model
 
 # Mínimo de caracteres para considerar que o fitz extraiu texto útil
 MIN_TEXT_LENGTH = 50
@@ -93,41 +100,28 @@ def extract_pdf_to_txt(pdf_path: Path) -> str:
     return text
 
 
-def clean_text(text: str) -> str:
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    text = re.sub(r" {2,}", " ", text)
-    text = re.sub(r"\x00", "", text)
-    return text.strip()
+def load_source_text(pdf_path: Path, reextract: bool) -> str:
+    """Devolve o texto do PDF, reutilizando o .txt existente salvo pedido em contrário."""
+    txt_path = TXT_DIR / (pdf_path.stem + ".txt")
+    if txt_path.exists() and not reextract:
+        print(f"  A reutilizar texto extraído: {txt_path.name}")
+        return txt_path.read_text(encoding="utf-8")
 
-
-def chunk_text(text: str) -> list[str]:
-    chunks = []
-    start = 0
-    while start < len(text):
-        end = start + CHUNK_SIZE
-        chunk = text[start:end]
-
-        if end < len(text):
-            boundary = max(
-                chunk.rfind(". "),
-                chunk.rfind(".\n"),
-                chunk.rfind("! "),
-                chunk.rfind("? "),
-                chunk.rfind("\n\n"),
-            )
-            if boundary > CHUNK_SIZE // 2:
-                end = start + boundary + 1
-                chunk = text[start:end]
-
-        chunk = chunk.strip()
-        if chunk:
-            chunks.append(chunk)
-        start = end - CHUNK_OVERLAP
-
-    return chunks
+    text = extract_pdf_to_txt(pdf_path)
+    txt_path.write_text(text, encoding="utf-8")
+    print(f"  Salvo em: {txt_path}")
+    return text
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Reconstrói o índice dos manuais.")
+    parser.add_argument(
+        "--reextract",
+        action="store_true",
+        help="Extrai de novo o texto dos PDFs em vez de reutilizar os .txt existentes.",
+    )
+    args = parser.parse_args()
+
     TXT_DIR.mkdir(parents=True, exist_ok=True)
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -142,21 +136,27 @@ def main():
     all_metadatas: list[dict] = []
     all_ids: list[str] = []
 
-    # --- Etapa 1 & 2: Extração e chunking ---
+    print(f"A carregar o modelo de embeddings: {EMBEDDING_MODEL}")
+    model = SentenceTransformer(EMBEDDING_MODEL)
+
+    def count_tokens(text: str) -> int:
+        return len(model.tokenizer.encode(text, add_special_tokens=True, truncation=False))
+
+    # --- Etapa 1 & 2: Extração, limpeza e chunking ---
     for pdf_path in pdf_files:
-        print(f"Extraindo: {pdf_path.name}")
+        print(f"Processando: {pdf_path.name}")
         try:
-            raw_text = extract_pdf_to_txt(pdf_path)
-            text = clean_text(raw_text)
+            text = clean_text(load_source_text(pdf_path, args.reextract))
         except Exception as e:
             print(f"  ERRO ao extrair {pdf_path.name}: {e}")
             continue
 
-        txt_path = TXT_DIR / (pdf_path.stem + ".txt")
-        txt_path.write_text(text, encoding="utf-8")
-        print(f"  Salvo em: {txt_path}")
-
-        chunks = chunk_text(text)
+        chunks = chunk_text(
+            text,
+            max_size=_CONFIG.chunk_max_tokens,
+            overlap=_CONFIG.chunk_overlap_tokens,
+            count_tokens=count_tokens,
+        )
         print(f"  Chunks gerados: {len(chunks)}")
 
         for i, chunk in enumerate(chunks):
@@ -170,10 +170,10 @@ def main():
 
     print(f"\nTotal de chunks: {len(all_chunks)}")
 
-    # --- Etapa 3: Embeddings ---
-    print(f"\nCarregando modelo de embeddings: {EMBEDDING_MODEL}")
-    model = SentenceTransformer(EMBEDDING_MODEL)
+    truncated = sum(count_tokens(chunk) > model.max_seq_length for chunk in all_chunks)
+    print(f"Chunks acima do limite do modelo ({model.max_seq_length} tokens): {truncated}")
 
+    # --- Etapa 3: Embeddings ---
     print("Gerando embeddings...")
     embeddings = model.encode(
         all_chunks,
@@ -215,5 +215,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-#data\extracted\5.-Rec.-Agr.-Maputo.txt

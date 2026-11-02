@@ -37,7 +37,7 @@ _FOLLOWUP_MARKERS: tuple[str, ...] = (
 )
 
 
-def _looks_self_contained(question: str) -> bool:
+def looks_self_contained(question: str) -> bool:
     """
     Heurística: perguntas curtas ou que começam com marcadores anafóricos
     típicos de perguntas de seguimento provavelmente dependem do histórico.
@@ -65,12 +65,12 @@ class QueryReformulator:
         Reformula `question` como pergunta autónoma com base em `history`.
 
         Se `history` estiver vazio, ou se a pergunta já parecer autónoma
-        (heurística — ver `_looks_self_contained`), devolve a pergunta
+        (heurística — ver `looks_self_contained`), devolve a pergunta
         original sem chamar o modelo. Se a chamada ao modelo falhar por
         qualquer razão, também recorre à pergunta original em vez de
         interromper o fluxo do pipeline.
         """
-        if not history or _looks_self_contained(question):
+        if not history or looks_self_contained(question):
             return question
 
         history_text = "\n".join(
@@ -90,7 +90,8 @@ class QueryReformulator:
                     {"role": "system", "content": _REFORMULATION_PROMPT},
                     {"role": "user", "content": user_message},
                 ],
-                options={"temperature": 0.0, "num_predict": 128},
+                options={"temperature": 0.0, "num_predict": 128, "num_ctx": self._config.num_ctx},
+                keep_alive=self._config.keep_alive,
             )
         except Exception as exc:  # reformulação é best-effort — nunca deve interromper o pipeline
             logger.warning("Falha ao reformular a query, a usar pergunta original: %s", exc)

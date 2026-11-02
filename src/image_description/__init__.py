@@ -8,5 +8,6 @@ entrarem no pipeline RAG.
 
 from .config import ImageDescriptionConfig
 from .describer import ImageDescriber
+from .glossary import ImageFindings, find_in_description
 
-__all__ = ["ImageDescriber", "ImageDescriptionConfig"]
+__all__ = ["ImageDescriber", "ImageDescriptionConfig", "ImageFindings", "find_in_description"]

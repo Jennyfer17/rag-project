@@ -9,33 +9,25 @@ from pathlib import Path
 _BASE_DIR = Path(__file__).resolve().parents[2]
 _NOTEBOOKS_DATA = _BASE_DIR / "notebooks" / "data"
 
-SYSTEM_PROMPT = """És o Amigo do Agricultor, um assistente virtual especializado em apoio
-técnico agrícola para pequenos agricultores da Província de Maputo, Moçambique.
+SYSTEM_PROMPT = """És o Amigo do Agricultor, assistente de apoio técnico agrícola para pequenos
+agricultores da Província de Maputo, Moçambique.
 
-O teu papel é fornecer orientação técnica clara, precisa e contextualizada sobre:
-- Preparação do solo e práticas de cultivo
-- Sementeira, operações culturais (sacha, amontoa, rega, adubação, controlo fitossanitário)
-- Colheita e tratamento pós-colheita
-- Gestão de pragas e doenças das culturas
-- Recomendações adaptadas às condições edafoclimáticas da Província de Maputo
-
-Instruções:
-- Usa sempre a informação do contexto fornecido para fundamentar as tuas respostas.
-- Se a informação contextual for insuficiente, indica-o claramente e fornece orientação
-  geral baseada nas boas práticas agrárias.
-- Responde sempre em Português, numa linguagem muito simples e clara: a maioria
-  dos agricultores não domina bem a língua portuguesa. Usa frases curtas e
-  directas, palavras do dia-a-dia e evita termos técnicos; quando um termo
-  técnico for mesmo necessário (ex: nome de uma praga ou doença), explica-o
-  em poucas palavras simples logo a seguir. Evita linguagem formal ou
-  rebuscada, frases longas com várias ideias encadeadas, e siglas ou
-  abreviaturas.
-- Não inventes factos nem valores não presentes no contexto.
-- Se a pergunta do agricultor for vaga ou não tiver detalhes suficientes para dar uma
-  resposta acertada (ex: não indica a cultura, a fase de crescimento, a época do ano,
-  os sintomas observados ou a localização), não adivinhes nem respondas de forma genérica.
-  Em vez disso, faz uma ou duas perguntas de seguimento curtas e específicas para obteres
-  os detalhes que faltam antes de dares a orientação técnica.
+Regras:
+- Responde só com a informação do contexto. Copia doses, medidas e nomes de produtos exactamente
+  como estão, e usa apenas os que se referem à cultura perguntada. Nunca inventes.
+- Começa directamente pela resposta e inclui os passos mais importantes. Se o contexto responder
+  só em parte, dá essa parte.
+- Só se o contexto não ajudar em nada, diz que não tens essa informação e sugere falar com os
+  Serviços de Extensão ou a Casa Agrária.
+- Só fazes uma pergunta ao agricultor se não conseguires responder sem ela. Caso contrário,
+  termina sem perguntas.
+- Usa os dados do solo apenas se a pergunta for sobre o solo ou a adubação.
+- Escreve sempre em Português muito simples, mesmo que a descrição de uma imagem venha noutra
+  língua: frases curtas, palavras do dia-a-dia, sem siglas. Se precisares de um termo técnico,
+  explica-o logo a seguir.
+- Usa no máximo 100 palavras. Para passos, usa uma lista curta.
+- Não menciones o contexto, os trechos nem os documentos.
+- Se a mensagem for apenas um cumprimento ou agradecimento, responde em poucas palavras.
 """
 
 
@@ -44,14 +36,19 @@ class ModelConfig:
     """Parâmetros externos do modelo LLaMA via Ollama."""
 
     model_name: str = "llama3.1:8b"
-    temperature: float = 0.7
+    # Valor baixo para a resposta se manter fiel aos manuais.
+    temperature: float = 0.2
     top_p: float = 0.9
     top_k: int = 40
-    # 512 em vez de 1024: as respostas WhatsApp são truncadas a 1600
-    # caracteres (~450-500 tokens em Português) — gerar mais do que isso
-    # só acrescenta latência de decode sem nunca chegar ao utilizador.
-    max_tokens: int = 512
+    # Margem para as 100 palavras pedidas no prompt. Em CPU cada token gerado
+    # custa cerca de 0,25 s, por isso as respostas curtas poupam muito tempo.
+    max_tokens: int = 256
     repeat_penalty: float = 1.1
+    # Explícito em todas as chamadas: valores diferentes obrigariam o Ollama
+    # a recarregar o modelo entre chamadas.
+    num_ctx: int = 4096
+    # Evita o carregamento a frio entre mensagens espaçadas.
+    keep_alive: str = "1h"
     ollama_base_url: str = "http://localhost:11434"
 
 
@@ -62,8 +59,25 @@ class RetrieverConfig:
     chroma_path: Path = field(
         default_factory=lambda: _NOTEBOOKS_DATA / "chroma_db"
     )
-    collection_name: str = "agriculture_manuals"
+    # A colecção anterior ("agriculture_manuals") fica na mesma base, para se
+    # poder comparar ou voltar atrás. Criada por src/ingest.py.
+    collection_name: str = "agriculture_manuals_v2"
+    extracted_text_dir: Path = field(
+        default_factory=lambda: _NOTEBOOKS_DATA / "extracted"
+    )
+    pdf_dir: Path = field(default_factory=lambda: _BASE_DIR / "data" / "agriculture")
+    # Limite em tokens: o modelo de embeddings ignora o que passar dos 128.
+    chunk_max_tokens: int = 120
+    chunk_overlap_tokens: int = 20
     n_results: int = 5
+    candidates: int = 50
+    # Similaridade de cosseno mínima para um chunk entrar no contexto. Não se
+    # aplica aos melhores resultados do BM25, que podem ser correspondências
+    # exactas (ex: nome de uma doença) com similaridade semântica baixa.
+    min_relevance: float = 0.5
+    lexical_protected: int = 3
+    # Quantos dos primeiros resultados incluem também o chunk seguinte.
+    expand_top: int = 1
 
     soil_db_url: str = field(
         default_factory=lambda: (
@@ -80,7 +94,18 @@ class RetrieverConfig:
 class ConversationConfig:
     """Parâmetros da memória de conversa usada para perguntas de seguimento."""
 
-    max_turns: int = 5
+    # Todo o histórico volta a entrar no prompt, por isso limitamos o número
+    # de trocas e o tamanho guardado de cada resposta.
+    max_turns: int = 2
+    max_answer_chars: int = 400
+
+
+@dataclass
+class AnswerCacheConfig:
+    """Parâmetros da cache de respostas para perguntas repetidas."""
+
+    max_size: int = 256
+    ttl_seconds: float = 24 * 60 * 60
 
 
 @dataclass
@@ -90,4 +115,5 @@ class RAGConfig:
     model: ModelConfig = field(default_factory=ModelConfig)
     retriever: RetrieverConfig = field(default_factory=RetrieverConfig)
     conversation: ConversationConfig = field(default_factory=ConversationConfig)
+    answer_cache: AnswerCacheConfig = field(default_factory=AnswerCacheConfig)
     system_prompt: str = SYSTEM_PROMPT

@@ -4,10 +4,10 @@ Configuração do módulo de descrição de imagens.
 
 from dataclasses import dataclass
 
+# Em inglês: o moondream2 responde nessa língua, mesmo com o pedido em português.
 _DEFAULT_PROMPT = (
-    "Descreve esta imagem em português, com foco em aspectos relevantes "
-    "para a agricultura: plantas, folhas, frutos, pragas, doenças, solo ou "
-    "equipamento visíveis. Sê específico e objectivo."
+    "Describe the plant and its problem: crop, affected part, colours, spots, "
+    "holes, insects. Two short sentences."
 )
 
 
@@ -19,3 +19,5 @@ class ImageDescriptionConfig:
     revision: str = "2025-06-21"
     device: str = "cpu"
     prompt: str = _DEFAULT_PROMPT
+    # Lado maior da imagem em píxeis: fotos maiores geram mais recortes para codificar.
+    max_image_side: int = 640
